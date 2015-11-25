@@ -103,8 +103,8 @@ trait ToMtree extends ReflectToolkit with MetaToolkit {
               case l.TermParamDef(lmods, lname, ltpt, ldefault) =>
                 val mmods = lmods.toMtrees[m.Mod]
                 val mname = lname.toMtree[m.Term.Param.Name]
-                val mtpt = if (ltpt.nonEmpty) Some(ltpt.toMtree[m.Type]) else None
-                val mdefault = if (ldefault.nonEmpty) Some(ldefault.toMtree[m.Term]) else None
+                val mtpt = ltpt.toMtreeopt[m.Type]
+                val mdefault = ldefault.toMtreeopt[m.Term]
                 m.Term.Param(mmods, mname, mtpt, mdefault).tryMattrs(gtree.symbol.tpe)
 
               // ============ TYPES ============
@@ -169,7 +169,7 @@ trait ToMtree extends ReflectToolkit with MetaToolkit {
               case l.ValDef(lmods, lpats, ltpt, lrhs) =>
                 val mmods = lmods.toMtrees[m.Mod]
                 val mpats = lpats.toMtrees[m.Pat]
-                val mtpt = if (ltpt.nonEmpty) Some(ltpt.toMtree[m.Type]) else None
+                val mtpt = ltpt.toMtreeopt[m.Type]
                 val mrhs = lrhs.toMtree[m.Term]
                 m.Defn.Val(mmods, mpats, mtpt, mrhs)
               case l.DefDef(lmods, lname, ltparams, lparamss, ltpt, lrhs) =>
@@ -177,7 +177,7 @@ trait ToMtree extends ReflectToolkit with MetaToolkit {
                 val mname = lname.toMtree[m.Term.Name]
                 val mtparams = ltparams.toMtrees[m.Type.Param]
                 val mparamss = lparamss.toMtreess[m.Term.Param]
-                val mtpt = if (ltpt.nonEmpty) Some(ltpt.toMtree[m.Type]) else None
+                val mtpt = ltpt.toMtreeopt[m.Type]
                 val mrhs = lrhs.toMtree[m.Term]
                 m.Defn.Def(mmods, mname, mtparams, mparamss, mtpt, mrhs)
               case l.ClassDef(lmods, lname, ltparams, lctor, limpl) =>
@@ -187,7 +187,7 @@ trait ToMtree extends ReflectToolkit with MetaToolkit {
                 val mctor = lctor.toMtree[m.Ctor.Primary]
                 val mimpl = limpl.toMtree[m.Template]
                 m.Defn.Class(mmods, mname, mtparams, mctor, mimpl)
-              case l.TraitDef(lmods, lname, ltparams, limpl) =>
+              case l.TraitDef(lmods, lname, ltparams, lctor, limpl) =>
                 val mmods = lmods.toMtrees[m.Mod]
                 val mname = lname.toMtree[m.Type.Name]
                 val mtparams = ltparams.toMtrees[m.Type.Param]
@@ -202,14 +202,7 @@ trait ToMtree extends ReflectToolkit with MetaToolkit {
 
               // ============ PKGS ============
 
-              case l.EmptyPackageDef(lstats) =>
-                val mstats = lstats.toMtrees[m.Stat]
-                m.Source(mstats)
-              case l.ToplevelPackageDef(lname, lstats) =>
-                val mname = lname.toMtree[m.Term.Name]
-                val mstats = lstats.toMtrees[m.Stat]
-                m.Source(List(m.Pkg(mname, mstats)))
-              case l.NestedPackageDef(lname, lstats) =>
+              case l.PackageDef(lname, lstats) =>
                 val mname = lname.toMtree[m.Term.Name]
                 val mstats = lstats.toMtrees[m.Stat]
                 m.Pkg(mname, mstats)
@@ -354,7 +347,17 @@ trait ToMtree extends ReflectToolkit with MetaToolkit {
       }
 
       def apply[T <: mapi.Tree : ClassTag](gtree: g.Tree): T = {
-        val mtree = gtree.toMtree[T]
+        val mtree = gtree match {
+          case g.PackageDef(g.Ident(nme.EMPTY_PACKAGE_NAME), gstats) =>
+            val mstats = gstats.toMtrees[m.Stat]
+            m.Source(mstats)
+          case g.PackageDef(gpid, gstats) =>
+            val mname = l.TermName(gpid).toMtee[m.Term.Name]
+            val mstats = lstats.toMtrees[m.Stat]
+            m.Source(List(m.Pkg(mname, mstats)))
+          case _ =>
+            gtree.toMtree[T]
+        }
         Debug.logConvert {
           println("======= SCALA.REFLECT TREE =======")
           println(gtree)
