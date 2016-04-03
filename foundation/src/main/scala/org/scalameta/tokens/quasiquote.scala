@@ -3,11 +3,21 @@ package org.scalameta.tokens
 import scala.language.experimental.macros
 import scala.annotation.StaticAnnotation
 import scala.reflect.macros.whitebox.Context
+import macrocompat.bundle
 
 class quasiquote[T](qname: scala.Symbol) extends StaticAnnotation {
   def macroTransform(annottees: Any*): Any = macro QuasiquoteMacros.impl
 }
 
+// TODO: macro-compat bug?
+object QuasiquoteMacros {
+  def impl(c: scala.reflect.macros.Context)(annottees: c.Expr[Any]*): c.Expr[Any] = {
+    val bundle = new QuasiquoteMacros(new macrocompat.RuntimeCompatContext(c.asInstanceOf[scala.reflect.macros.runtime.Context]))
+    c.Expr[Any](bundle.impl(annottees.map(_.tree.asInstanceOf[bundle.c.Tree]): _*).asInstanceOf[c.Tree])
+  }
+}
+
+@bundle
 class QuasiquoteMacros(val c: Context) {
   import c.universe._
   import Flag._
@@ -16,7 +26,7 @@ class QuasiquoteMacros(val c: Context) {
   val Dialect = tq"_root_.scala.meta.Dialect"
   val Tokens = tq"_root_.scala.meta.tokens.Tokens"
   def impl(annottees: c.Tree*): c.Tree = {
-    val q"new $_[..$qtypes](scala.Symbol(${qname: String})).macroTransform(..$_)" = c.macroApplication
+    val q"new $x1[..$qtypes](scala.Symbol(${qname: String})).macroTransform(..$x2)" = c.macroApplication
     def transform(cdef: ClassDef, mdef: ModuleDef): List[ImplDef] = {
       val q"$mods class $name[..$tparams] $ctorMods(...$paramss) extends { ..$earlydefns } with ..$parents { $self => ..$stats }" = cdef
       val stats1 = stats :+ q"""

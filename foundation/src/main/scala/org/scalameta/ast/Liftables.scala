@@ -6,12 +6,22 @@ import org.scalameta.unreachable
 import org.scalameta.ast.internal.Ast
 import org.scalameta.adt.{LiftableMacros => AdtLiftableMacros}
 import org.scalameta.ast.{Reflection => AstReflection}
+import macrocompat.bundle
 
 trait Liftables {
   val u: scala.reflect.macros.Universe
   implicit def materializeAst[T <: Ast]: u.Liftable[T] = macro LiftableMacros.impl[T]
 }
 
+// TODO: macro-compat bug?
+object LiftableMacros {
+  def impl[T <: Adt](c: scala.reflect.macros.Context)(implicit T: c.WeakTypeTag[T]) = {
+    val bundle = new LiftableMacros(new macrocompat.RuntimeCompatContext(c.asInstanceOf[scala.reflect.macros.runtime.Context]))
+    c.Expr(bundle.impl[T](T.asInstanceOf[bundle.c.WeakTypeTag[T]]).asInstanceOf[c.Tree])
+  }
+}
+
+@bundle
 class LiftableMacros(override val c: Context) extends AdtLiftableMacros(c) with AstReflection {
   import c.universe._
   lazy val QuasiClass = c.mirror.staticClass("scala.meta.internal.ast.Quasi")

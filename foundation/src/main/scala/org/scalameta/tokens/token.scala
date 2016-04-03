@@ -5,11 +5,21 @@ import scala.annotation.StaticAnnotation
 import scala.reflect.macros.whitebox.Context
 import scala.collection.mutable.ListBuffer
 import org.scalameta.show.escape
+import macrocompat.bundle
 
 class token extends StaticAnnotation {
   def macroTransform(annottees: Any*): Any = macro TokenMacros.impl
 }
 
+// // TODO: macro-compat bug?
+// object TokenMacros {
+//   def impl(c: scala.reflect.macros.Context)(annottees: c.Expr[Any]*): c.Expr[Any] = {
+//     val bundle = new TokenMacros(new macrocompat.RuntimeCompatContext(c.asInstanceOf[scala.reflect.macros.runtime.Context]))
+//     c.Expr[Any](bundle.impl(annottees.map(_.tree.asInstanceOf[bundle.c.Tree]): _*).asInstanceOf[c.Tree])
+//   }
+// }
+
+@bundle
 class TokenMacros(val c: Context) {
   import c.universe._
   import Flag._

@@ -3,18 +3,28 @@ package org.scalameta.annotations
 import scala.language.experimental.macros
 import scala.annotation.StaticAnnotation
 import scala.reflect.macros.whitebox.Context
+import macrocompat.bundle
 
 class opaque(exclude: String = "") extends StaticAnnotation {
   def macroTransform(annottees: Any*): Any = macro OpaqueMacros.impl
 }
 
+// TODO: macro-compat bug?
+object OpaqueMacros {
+  def impl(c: scala.reflect.macros.Context)(annottees: c.Expr[Any]*): c.Expr[Any] = {
+    val bundle = new OpaqueMacros(new macrocompat.RuntimeCompatContext(c.asInstanceOf[scala.reflect.macros.runtime.Context]))
+    c.Expr[Any](bundle.impl(annottees.map(_.tree.asInstanceOf[bundle.c.Tree]): _*).asInstanceOf[c.Tree])
+  }
+}
+
+@bundle
 class OpaqueMacros(val c: Context) {
   import c.universe._
   import Flag._
   def impl(annottees: c.Tree*): c.Tree = {
     val args = c.macroApplication match {
-      case q"new $_(..$args).macroTransform(..$_)" => args
-      case q"new $_().macroTransform(..$_)" => Nil
+      case q"new $x1(..$args).macroTransform(..$x2)" => args
+      case q"new $x1().macroTransform(..$x2)" => Nil
     }
     val exclude = "^" + args.collect{ case q"exclude = ${s: String}" => s }.headOption.getOrElse("") + "$"
     def transform(impl: Template): Template = {

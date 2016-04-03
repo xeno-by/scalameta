@@ -7,11 +7,21 @@ import scala.collection.mutable.{ListBuffer, ListMap}
 import org.scalameta.unreachable
 import org.scalameta.ast.{Reflection => AstReflection}
 import scala.compat.Platform.EOL
+import macrocompat.bundle
 
 class ast extends StaticAnnotation {
   def macroTransform(annottees: Any*): Any = macro AstMacros.impl
 }
 
+// // TODO: macro-compat bug?
+// object AstMacros {
+//   def impl(c: scala.reflect.macros.Context)(annottees: c.Expr[Any]*): c.Expr[Any] = {
+//     val bundle = new AstMacros(new macrocompat.RuntimeCompatContext(c.asInstanceOf[scala.reflect.macros.runtime.Context]))
+//     c.Expr[Any](bundle.impl(annottees.map(_.tree.asInstanceOf[bundle.c.Tree]): _*).asInstanceOf[c.Tree])
+//   }
+// }
+
+@bundle
 class AstMacros(val c: Context) extends AstReflection {
   lazy val u: c.universe.type = c.universe
   lazy val mirror = c.mirror

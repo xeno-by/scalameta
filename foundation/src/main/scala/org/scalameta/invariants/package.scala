@@ -115,7 +115,7 @@ package invariants {
       }
 
       def propify(tree: Tree): Prop = tree match {
-        case q"$_.debug(..$_)" => Debug()
+        case q"$x1.debug(..$x2)" => Debug()
         case q"!$x" => Not(propify(x))
         case q"$x && $y" => And(propify(x), propify(y))
         case q"$x || $y" => Or(propify(x), propify(y))
@@ -123,9 +123,9 @@ package invariants {
         case q"$x != $y" => Ne(Atom(x), Atom(y))
         case q"$x.forall($y)" => Forall(Atom(x), Atom(y))
         case q"$x.exists($y)" => Exists(Atom(x), Atom(y))
-        case q"$_.Implication($x).==>($y)" => Imply(Atom(x), Atom(y))
-        case q"$_.Implication($x).<==($y)" => Imply(Atom(y), Atom(x))
-        case q"$_.Implication($x).<==>($y)" => And(Imply(Atom(x), Atom(y)), Imply(Atom(y), Atom(x)))
+        case q"$x1.Implication($x).==>($y)" => Imply(Atom(x), Atom(y))
+        case q"$x1.Implication($x).<==($y)" => Imply(Atom(y), Atom(x))
+        case q"$x1.Implication($x).<==>($y)" => And(Imply(Atom(x), Atom(y)), Imply(Atom(y), Atom(x)))
         case x => Atom(x)
       }
 
@@ -232,7 +232,7 @@ package invariants {
       q"_root_.org.scalameta.invariants.`package`.require(false && $debug).asInstanceOf[_root_.scala.Nothing]"
     }
     def requireCast[U](ev: c.Tree)(U: c.WeakTypeTag[U]): c.Tree = {
-      val q"$_($x)" = c.prefix.tree
+      val q"$x1($x)" = c.prefix.tree
       q"""
         val temp = ${c.untypecheck(x)}
         val tempClass = if (temp != null) temp.getClass else null
@@ -241,7 +241,7 @@ package invariants {
       """
     }
     def requireGet: c.Tree = {
-      val q"$_($x)" = c.prefix.tree
+      val q"$x1($x)" = c.prefix.tree
       q"""
         val temp = ${c.untypecheck(x)}
         _root_.org.scalameta.invariants.require(temp != null && temp.isDefined)

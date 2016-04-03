@@ -5,11 +5,21 @@ import scala.language.reflectiveCalls
 import scala.annotation.StaticAnnotation
 import scala.reflect.macros.whitebox.Context
 import org.scalameta.ast.{Reflection => AstReflection}
+import macrocompat.bundle
 
 class registry extends StaticAnnotation {
   def macroTransform(annottees: Any*): Any = macro RegistryMacros.impl
 }
 
+// // TODO: macro-compat bug?
+// object RegistryMacros {
+//   def impl(c: scala.reflect.macros.Context)(annottees: c.Expr[Any]*): c.Expr[Any] = {
+//     val bundle = new RegistryMacros(new macrocompat.RuntimeCompatContext(c.asInstanceOf[scala.reflect.macros.runtime.Context]))
+//     c.Expr[Any](bundle.impl(annottees.map(_.tree.asInstanceOf[bundle.c.Tree]): _*).asInstanceOf[c.Tree])
+//   }
+// }
+
+@bundle
 class RegistryMacros(val c: Context) extends AstReflection {
   lazy val u: c.universe.type = c.universe
   lazy val mirror: u.Mirror = c.mirror

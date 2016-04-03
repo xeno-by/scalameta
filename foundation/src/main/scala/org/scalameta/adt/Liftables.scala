@@ -8,12 +8,22 @@ import org.scalameta.adt.Internal.Adt
 import org.scalameta.adt.{Reflection => AdtReflection}
 import org.scalameta.debug._
 import org.scalameta.ast.XtensionAstDebug
+import macrocompat.bundle
 
 trait Liftables {
   val u: scala.reflect.macros.Universe
   implicit def materializeAdt[T <: Adt]: u.Liftable[T] = macro LiftableMacros.impl[T]
 }
 
+// TODO: macro-compat bug?
+object LiftableMacros {
+  def impl[T <: Adt](c: scala.reflect.macros.Context)(implicit T: c.WeakTypeTag[T]) = {
+    val bundle = new LiftableMacros(new macrocompat.RuntimeCompatContext(c.asInstanceOf[scala.reflect.macros.runtime.Context]))
+    c.Expr(bundle.impl[T](T.asInstanceOf[bundle.c.WeakTypeTag[T]]).asInstanceOf[c.Tree])
+  }
+}
+
+@bundle
 class LiftableMacros(val c: Context) extends AdtReflection {
   lazy val u: c.universe.type = c.universe
   lazy val mirror: u.Mirror = c.mirror
@@ -72,7 +82,7 @@ class LiftableMacros(val c: Context) extends AdtReflection {
           // q"$u.AssignOrNamedArg($fieldName, $fieldValue)"
           q"$fieldValue"
         })
-        val body = if (adt.sym.isClass) q"$u.Apply($namePath, $args)" else q"$namePath"
+        val body = if (adt.sym.isClass) q"$u.Apply($namePath, _root_.scala.`package`.List(..$args))" else q"$namePath"
         q"def $defName($localName: ${adt.tpe}): $u.Tree = $body"
       })
       val body: Tree = customWrapper(adt, defName, localName, matcher.rhs).getOrElse(matcher.rhs)

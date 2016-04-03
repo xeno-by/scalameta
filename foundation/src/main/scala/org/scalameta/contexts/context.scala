@@ -3,18 +3,28 @@ package org.scalameta.contexts
 import scala.language.experimental.macros
 import scala.annotation.StaticAnnotation
 import scala.reflect.macros.whitebox.Context
+import macrocompat.bundle
 
 class context(translateExceptions: Boolean = false) extends StaticAnnotation {
   def macroTransform(annottees: Any*): Any = macro ContextMacros.impl
 }
 
+// // TODO: macro-compat bug?
+// object ContextMacros {
+//   def impl(c: scala.reflect.macros.Context)(annottees: c.Expr[Any]*): c.Expr[Any] = {
+//     val bundle = new ContextMacros(new macrocompat.RuntimeCompatContext(c.asInstanceOf[scala.reflect.macros.runtime.Context]))
+//     c.Expr[Any](bundle.impl(annottees.map(_.tree.asInstanceOf[bundle.c.Tree]): _*).asInstanceOf[c.Tree])
+//   }
+// }
+
+@bundle
 class ContextMacros(val c: Context) {
   import c.universe._
   import Flag._
   def impl(annottees: Tree*): Tree = {
     val args = c.macroApplication match {
-      case q"new $_(..$args).macroTransform(..$_)" => args
-      case q"new $_().macroTransform(..$_)" => Nil
+      case q"new $x1(..$args).macroTransform(..$x2)" => args
+      case q"new $x1().macroTransform(..$x2)" => Nil
     }
     val translateExceptions = args.collect{ case q"translateExceptions = true" => true }.nonEmpty
     def transform(cdef: ClassDef): ClassDef = {

@@ -53,7 +53,7 @@ trait Reflection extends AdtReflection {
   private lazy val scalaMetaRegistry: Map[Symbol, List[Symbol]] = {
     RegistryModule.initialize.annotations match {
       case List(ann) if ann.tree.tpe =:= RegistryAnnotation.toType =>
-        val q"new $_($_.$_[..$_](..${astPaths: List[String]}))" = ann.tree
+        val q"new $x1($x2.$x3[..$x4](..${astPaths: List[String]}))" = ann.tree
         val astClasses = astPaths.map(astPath => {
           def locateModule(root: ModuleSymbol, parts: List[String]): ModuleSymbol = parts match {
             case Nil => root
@@ -127,7 +127,7 @@ trait Reflection extends AdtReflection {
           case ClassDef(Modifiers(_, _, anns), name, _, impl) =>
             if (anns.exists(_.toString == "new ast()")) {
               if (inner) sys.error("@ast classes can't be inner: " + name)
-              val q"$_ class $_[..$_] $_(...$paramss) extends { ..$_ } with ..$parents { $_ => ..$_ }" = tree
+              val q"$x1 class $x2[..$x3] $x4(...$paramss) extends { ..$x5 } with ..$parents { $x6 => ..$x7 }" = tree
               drilldown(name, inner = true)(result += module)
             }
             drilldown(name, inner = true)(super.traverse(tree))

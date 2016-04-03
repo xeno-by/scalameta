@@ -7,6 +7,7 @@ import scala.{Seq => _}
 import scala.collection.immutable.Seq
 import scala.reflect.macros.blackbox.Context
 import org.scalameta.adt.{Reflection => AdtReflection}
+import macrocompat.bundle
 
 object internal {
   trait Ast extends org.scalameta.adt.Internal.Adt
@@ -20,12 +21,46 @@ object internal {
 
   def hierarchyCheck[T]: Unit = macro Macros.hierarchyCheck[T]
   def productPrefix[T]: String = macro Macros.productPrefix[T]
-  def loadField[T](f: T): Unit = macro Macros.loadField
-  def storeField[T](f: T, v: T): Unit = macro Macros.storeField
-  def initField[T](f: T): T = macro Macros.initField
-  def initParam[T](f: T): T = macro Macros.initField
-  def children[T, U]: Seq[U] = macro Macros.children[T]
+  def loadField[T](f: T): Unit = macro Macros.loadField[T]
+  def storeField[T](f: T, v: T): Unit = macro Macros.storeField[T]
+  def initField[T](f: T): T = macro Macros.initField[T]
+  def initParam[T](f: T): T = macro Macros.initField[T]
+  def children[T, U]: Seq[U] = macro Macros.children[T, U]
 
+  // TODO: macro-compat bug?
+  object Macros {
+    def hierarchyCheck[T](c: scala.reflect.macros.Context)(implicit T: c.WeakTypeTag[T]): c.Expr[Unit] = {
+      val bundle = new Macros(new macrocompat.RuntimeCompatContext(c.asInstanceOf[scala.reflect.macros.runtime.Context]))
+      c.Expr[Unit](bundle.hierarchyCheck[T](T.asInstanceOf[bundle.c.WeakTypeTag[T]]).asInstanceOf[c.Tree])
+    }
+
+    def productPrefix[T](c: scala.reflect.macros.Context)(implicit T: c.WeakTypeTag[T]): c.Expr[String] = {
+      val bundle = new Macros(new macrocompat.RuntimeCompatContext(c.asInstanceOf[scala.reflect.macros.runtime.Context]))
+      c.Expr[String](bundle.productPrefix[T](T.asInstanceOf[bundle.c.WeakTypeTag[T]]).asInstanceOf[c.Tree])
+    }
+
+    def loadField[T](c: scala.reflect.macros.Context)(f: c.Expr[T]): c.Expr[Unit] = {
+      val bundle = new Macros(new macrocompat.RuntimeCompatContext(c.asInstanceOf[scala.reflect.macros.runtime.Context]))
+      c.Expr[Unit](bundle.loadField(x.tree.asInstanceOf[bundle.c.Tree]).asInstanceOf[c.Tree])
+    }
+
+    def storeField[T](c: scala.reflect.macros.Context)(f: c.Expr[T], v: c.Expr[T]): c.Expr[T] = {
+      val bundle = new Macros(new macrocompat.RuntimeCompatContext(c.asInstanceOf[scala.reflect.macros.runtime.Context]))
+      c.Expr[T](bundle.storeField(x.tree.asInstanceOf[bundle.c.Tree], v.tree.asInstanceOf[bundle.c.Tree]).asInstanceOf[c.Tree])
+    }
+
+    def initField[T](c: scala.reflect.macros.Context)(f: c.Expr[T]): c.Expr[T] = {
+      val bundle = new Macros(new macrocompat.RuntimeCompatContext(c.asInstanceOf[scala.reflect.macros.runtime.Context]))
+      c.Expr[T](bundle.initField(x.tree.asInstanceOf[bundle.c.Tree]).asInstanceOf[c.Tree])
+    }
+
+    def children[T, U](c: scala.reflect.macros.Context)(implicit T: c.WeakTypeTag[T], U: c.WeakTypeTag[U]): c.Expr[Seq[U]] = {
+      val bundle = new Macros(new macrocompat.RuntimeCompatContext(c.asInstanceOf[scala.reflect.macros.runtime.Context]))
+      c.Expr[Seq[U]](bundle.children[T](T.asInstanceOf[bundle.c.WeakTypeTag[T]]).asInstanceOf[c.Tree])
+    }
+  }
+
+  @bundle
   class Macros(val c: Context) extends AdtReflection {
     lazy val u: c.universe.type = c.universe
     lazy val mirror: u.Mirror = c.mirror

@@ -3,16 +3,18 @@ package org.scalameta.annotations
 import scala.language.experimental.macros
 import scala.annotation.StaticAnnotation
 import scala.reflect.macros.whitebox.Context
+import macrocompat.bundle
 
 class contextful[T] extends StaticAnnotation {
   def macroTransform(annottees: Any*): Any = macro ContextfulMacros.impl
 }
 
+@bundle
 class ContextfulMacros(val c: Context) {
   import c.universe._
   import Flag._
   def impl(annottees: Tree*): Tree = {
-    val q"new $_[$t]().macroTransform(..$_)" = c.macroApplication
+    val q"new $x1[$t]().macroTransform(..$x2)" = c.macroApplication
     def mkContextParameter(): ValDef = {
       val prefix = if (t.toString.contains("SourceContext")) "src" else "c"
       val name = c.freshName(TermName(prefix))

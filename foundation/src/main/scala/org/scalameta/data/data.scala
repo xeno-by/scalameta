@@ -4,11 +4,21 @@ import scala.language.experimental.macros
 import scala.annotation.StaticAnnotation
 import scala.reflect.macros.whitebox.Context
 import scala.collection.mutable.ListBuffer
+import macrocompat.bundle
 
 class data extends StaticAnnotation {
   def macroTransform(annottees: Any*): Any = macro DataMacros.data
 }
 
+// TODO: macro-compat bug?
+object DataMacros {
+  def impl(c: scala.reflect.macros.Context)(annottees: c.Expr[Any]*): c.Expr[Any] = {
+    val bundle = new DataMacros(new macrocompat.RuntimeCompatContext(c.asInstanceOf[scala.reflect.macros.runtime.Context]))
+    c.Expr[Any](bundle.impl(annottees.map(_.tree.asInstanceOf[bundle.c.Tree]): _*).asInstanceOf[c.Tree])
+  }
+}
+
+@bundle
 class DataMacros(val c: Context) {
   import c.universe._
   import definitions._
@@ -33,7 +43,7 @@ class DataMacros(val c: Context) {
       def finalize(mods: Modifiers) = Modifiers(mods.flags | FINAL, mods.privateWithin, mods.annotations)
       def varify(mods: Modifiers) = Modifiers(mods.flags | MUTABLE, mods.privateWithin, mods.annotations)
       def needs(name: Name, companion: Boolean) = {
-        val q"new $_(...$argss).macroTransform(..$_)" = c.macroApplication
+        val q"new $x1(...$argss).macroTransform(..$x2)" = c.macroApplication
         val banIndicator = argss.flatten.find {
           case AssignOrNamedArg(Ident(TermName(param)), Literal(Constant(false))) => param == name.toString
           case _ => false

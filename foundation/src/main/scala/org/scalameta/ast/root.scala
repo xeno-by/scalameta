@@ -5,11 +5,21 @@ import scala.annotation.StaticAnnotation
 import scala.reflect.macros.whitebox.Context
 import scala.collection.mutable.ListBuffer
 import org.scalameta.ast.{Reflection => AstReflection}
+import macrocompat.bundle
 
 class root extends StaticAnnotation {
   def macroTransform(annottees: Any*): Any = macro RootMacros.impl
 }
 
+// // TODO: macro-compat bug?
+// object RootMacros {
+//   def impl(c: scala.reflect.macros.Context)(annottees: c.Expr[Any]*): c.Expr[Any] = {
+//     val bundle = new RootMacros(new macrocompat.RuntimeCompatContext(c.asInstanceOf[scala.reflect.macros.runtime.Context]))
+//     c.Expr[Any](bundle.impl(annottees.map(_.tree.asInstanceOf[bundle.c.Tree]): _*).asInstanceOf[c.Tree])
+//   }
+// }
+
+@bundle
 class RootMacros(val c: Context) extends AstReflection {
   lazy val u: c.universe.type = c.universe
   lazy val mirror = c.mirror

@@ -10,8 +10,8 @@ trait Reflection {
   val u: Universe
   val mirror: u.Mirror
   import u._
-  import internal._
-  import decorators._
+  // import internal._
+  // import decorators._
 
   implicit class XtensionAdtSymbol(sym: Symbol) {
     def isAdt: Boolean = {

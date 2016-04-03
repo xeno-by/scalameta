@@ -8,6 +8,14 @@ class root extends StaticAnnotation {
   def macroTransform(annottees: Any*): Any = macro RootMacros.impl
 }
 
+// TODO: macro-compat bug?
+object RootMacros {
+  def impl(c: scala.reflect.macros.Context)(annottees: c.Expr[Any]*): c.Expr[Any] = {
+    val bundle = new RootMacros(new macrocompat.RuntimeCompatContext(c.asInstanceOf[scala.reflect.macros.runtime.Context]))
+    c.Expr[Any](bundle.impl(annottees.map(_.tree.asInstanceOf[bundle.c.Tree]): _*).asInstanceOf[c.Tree])
+  }
+}
+
 class RootMacros(val c: Context) {
   import c.universe._
   import Flag._

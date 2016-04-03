@@ -3,6 +3,7 @@ package org
 import scala.language.experimental.macros
 import scala.reflect.macros.blackbox.Context
 import scala.compat.Platform.EOL
+import macrocompat.bundle
 
 package object scalameta {
   def unreachable: Nothing = macro UnreachableMacros.unreachable
@@ -19,6 +20,19 @@ package scalameta {
     }
   }
 
+  // TODO: macro-compat bug?
+  object UnreachableMacros {
+    def unreachable(c: scala.reflect.macros.Context): c.Expr[Nothing] = {
+      val bundle = new UnreachableMacros(new macrocompat.RuntimeCompatContext(c.asInstanceOf[scala.reflect.macros.runtime.Context]))
+      c.Expr[Nothing](bundle.unreachable.asInstanceOf[c.Tree])
+    }
+    def unreachableDebug(c: scala.reflect.macros.Context)(debug: c.Expr[Boolean]): c.Expr[Nothing] = {
+      val bundle = new UnreachableMacros(new macrocompat.RuntimeCompatContext(c.asInstanceOf[scala.reflect.macros.runtime.Context]))
+      c.Expr[Nothing](bundle.unreachableDebug(debug.tree.asInstanceOf[bundle.c.Tree]).asInstanceOf[c.Tree])
+    }
+  }
+
+  @bundle
   class UnreachableMacros(val c: Context) {
     import c.universe._
     def unreachable: c.Tree = {

@@ -6,7 +6,7 @@ import sbtunidoc.Plugin._
 import UnidocKeys._
 
 object build extends Build {
-  lazy val ScalaVersion = "2.11.8"
+  lazy val ScalaVersions = Seq("2.10.6", "2.11.8")
   lazy val LibraryVersion = "0.1.0-SNAPSHOT"
 
   lazy val root = Project(
@@ -43,7 +43,7 @@ object build extends Build {
     publishableSettings: _*
   ) settings (
     description := "Scala.meta's fundamental helpers and utilities",
-    libraryDependencies <+= (scalaVersion)("org.scala-lang" % "scala-reflect" % _ % "provided")
+    enableMacros
   )
 
   lazy val dialects = Project(
@@ -53,7 +53,7 @@ object build extends Build {
     publishableSettings: _*
   ) settings (
     description := "Scala.meta's dialects",
-    libraryDependencies <+= (scalaVersion)("org.scala-lang" % "scala-reflect" % _ % "provided")
+    enableMacros
   ) dependsOn (foundation, exceptions)
 
   lazy val exceptions = Project(
@@ -120,7 +120,7 @@ object build extends Build {
     publishableSettings: _*
   ) settings (
     description := "Scala.meta's quasiquotes for tokens",
-    libraryDependencies <+= (scalaVersion)("org.scala-lang" % "scala-reflect" % _ % "provided")
+    enableMacros
   ) dependsOn (foundation, exceptions, tokens, tokenizers)
 
   lazy val tokens = Project(
@@ -130,7 +130,7 @@ object build extends Build {
     publishableSettings: _*
   ) settings (
     description := "Scala.meta's tokens and token-based abstractions (inputs and positions)",
-    libraryDependencies <+= (scalaVersion)("org.scala-lang" % "scala-reflect" % _ % "provided")
+    enableMacros
   ) dependsOn (foundation, exceptions, prettyprinters, dialects, inputs)
 
   lazy val tql = Project(
@@ -140,7 +140,7 @@ object build extends Build {
     publishableSettings: _*
   ) settings (
     description := "Scala.meta's tree query language (basic and extended APIs)",
-    libraryDependencies <+= (scalaVersion)("org.scala-lang" % "scala-compiler" % _ % "provided")
+    enableMacros
   ) dependsOn (foundation, exceptions, trees)
 
   lazy val trees = Project(
@@ -150,7 +150,7 @@ object build extends Build {
     publishableSettings: _*
   ) settings (
     description := "Scala.meta's abstract syntax trees",
-    libraryDependencies <+= (scalaVersion)("org.scala-lang" % "scala-reflect" % _ % "provided")
+    enableMacros
   ) dependsOn (foundation, exceptions, prettyprinters, inputs, tokens, tokenquasiquotes)
 
   lazy val scalameta = Project(
@@ -185,7 +185,8 @@ object build extends Build {
   ) dependsOn (scalameta)
 
   lazy val sharedSettings = Defaults.defaultSettings ++ Seq(
-    scalaVersion := ScalaVersion,
+    scalaVersion := ScalaVersions.max,
+    crossScalaVersions := ScalaVersions,
     crossVersion := CrossVersion.binary,
     version := LibraryVersion,
     organization := "org.scalameta",
@@ -349,5 +350,18 @@ object build extends Build {
         defaultValue
       }
     )
+  }
+
+  lazy val enableMacros = libraryDependencies ++= {
+    val compilerInternals = Seq(
+      "org.scala-lang" % "scala-compiler" % scalaVersion.value % "provided",
+      "org.scala-lang" % "scala-reflect" % scalaVersion.value % "provided"
+    )
+    val backwardCompat210 = {
+      val macroCompat = "org.typelevel" %% "macro-compat" % "1.1.1"
+      if (scalaVersion.value.startsWith("2.10")) Seq("org.scalamacros" %% "quasiquotes" % "2.1.0", macroCompat)
+      else Seq(macroCompat)
+    }
+    compilerInternals ++ backwardCompat210
   }
 }

@@ -6,6 +6,7 @@ import org.scalameta.invariants.nonEmpty
 import scala.reflect.macros.whitebox.Context
 import scala.collection.mutable.ListBuffer
 import org.scalameta.adt.{Reflection => AdtReflection}
+import macrocompat.bundle
 
 class root extends StaticAnnotation {
   def macroTransform(annottees: Any*): Any = macro AdtMacros.root
@@ -31,6 +32,7 @@ class someLeaf extends StaticAnnotation {
   def macroTransform(annottees: Any*): Any = macro AdtMacros.someLeaf
 }
 
+@bundle
 class AdtMacros(val c: Context) {
   import c.universe._
   import definitions._
@@ -80,7 +82,7 @@ class AdtMacros(val c: Context) {
       stats1 += q"def flatMap(fn: this.ContentType => $name): $name"
 
       val contentTypes = mstats.collect {
-        case q"${Modifiers(_, _, anns)} class $_[..$_] $_($_: $tpt) extends { ..$_ } with ..$_ { $_ => ..$_ }"
+        case q"${Modifiers(_, _, anns)} class $x1[..$x2] $x3($x4: $tpt) extends { ..$x5 } with ..$x6 { $x7 => ..$x8 }"
         if anns.exists({ case q"new someLeaf" => true; case _ => false }) =>
           tpt
       }
@@ -136,7 +138,7 @@ class AdtMacros(val c: Context) {
 
   def leaf(annottees: Tree*): Tree = {
     def transformLeafClass(cdef: ClassDef, mdef: ModuleDef): List[ImplDef] = {
-      val q"new $_(...$argss).macroTransform(..$_)" = c.macroApplication
+      val q"new $x1(...$argss).macroTransform(..$x2)" = c.macroApplication
       val q"$mods class $name[..$tparams] $ctorMods(...$paramss) extends { ..$earlydefns } with ..$parents { $self => ..$stats }" = cdef
       val q"$mmods object $mname extends { ..$mearlydefns } with ..$mparents { $mself => ..$mstats }" = mdef
       val parents1 = ListBuffer[Tree]() ++ parents
@@ -166,7 +168,7 @@ class AdtMacros(val c: Context) {
     }
 
     def transformLeafModule(mdef: ModuleDef): ModuleDef = {
-      val q"new $_(...$argss).macroTransform(..$_)" = c.macroApplication
+      val q"new $x1(...$argss).macroTransform(..$x2)" = c.macroApplication
       val q"$mmods object $mname extends { ..$mearlydefns } with ..$mparents { $mself => ..$mstats }" = mdef
       val manns1 = ListBuffer[Tree]() ++ mmods.annotations
       def mmods1 = mmods.mapAnnotations(_ => manns1.toList)
@@ -284,12 +286,41 @@ object Internal {
   class byNeedField extends StaticAnnotation
   case class TagAttachment(counter: Int)
   def calculateTag[T]: Int = macro AdtHelperMacros.calculateTag[T]
-  def nullCheck[T](x: T): Unit = macro AdtHelperMacros.nullCheck
-  def emptyCheck[T](x: T): Unit = macro AdtHelperMacros.emptyCheck
+  def nullCheck[T](x: T): Unit = macro AdtHelperMacros.nullCheck[T]
+  def emptyCheck[T](x: T): Unit = macro AdtHelperMacros.emptyCheck[T]
   def hierarchyCheck[T]: Unit = macro AdtHelperMacros.hierarchyCheck[T]
   def immutabilityCheck[T]: Unit = macro AdtHelperMacros.immutabilityCheck[T]
 }
 
+// TODO: macro-compat bug?
+object AdtHelperMacros {
+  def calculateTag[T](c: scala.reflect.macros.Context)(implicit T: c.WeakTypeTag[T]): c.Expr[Int] = {
+    val bundle = new AdtHelperMacros(new macrocompat.RuntimeCompatContext(c.asInstanceOf[scala.reflect.macros.runtime.Context]))
+    c.Expr[Int](bundle.calculateTag[T](T.asInstanceOf[bundle.c.WeakTypeTag[T]]).asInstanceOf[c.Tree])
+  }
+
+  def nullCheck[T](c: scala.reflect.macros.Context)(x: c.Expr[T]): c.Expr[Unit] = {
+    val bundle = new AdtHelperMacros(new macrocompat.RuntimeCompatContext(c.asInstanceOf[scala.reflect.macros.runtime.Context]))
+    c.Expr[Unit](bundle.nullCheck(x.tree.asInstanceOf[bundle.c.Tree]).asInstanceOf[c.Tree])
+  }
+
+  def emptyCheck[T](c: scala.reflect.macros.Context)(x: c.Expr[T]): c.Expr[Unit] = {
+    val bundle = new AdtHelperMacros(new macrocompat.RuntimeCompatContext(c.asInstanceOf[scala.reflect.macros.runtime.Context]))
+    c.Expr[Unit](bundle.emptyCheck(x.tree.asInstanceOf[bundle.c.Tree]).asInstanceOf[c.Tree])
+  }
+
+  def hierarchyCheck[T](c: scala.reflect.macros.Context)(implicit T: c.WeakTypeTag[T]): c.Expr[Unit] = {
+    val bundle = new AdtHelperMacros(new macrocompat.RuntimeCompatContext(c.asInstanceOf[scala.reflect.macros.runtime.Context]))
+    c.Expr[Unit](bundle.hierarchyCheck[T](T.asInstanceOf[bundle.c.WeakTypeTag[T]]).asInstanceOf[c.Tree])
+  }
+
+  def immutabilityCheck[T](c: scala.reflect.macros.Context)(implicit T: c.WeakTypeTag[T]): c.Expr[Unit] = {
+    val bundle = new AdtHelperMacros(new macrocompat.RuntimeCompatContext(c.asInstanceOf[scala.reflect.macros.runtime.Context]))
+    c.Expr[Unit](bundle.immutabilityCheck[T](T.asInstanceOf[bundle.c.WeakTypeTag[T]]).asInstanceOf[c.Tree])
+  }
+}
+
+@bundle
 class AdtHelperMacros(val c: Context) extends AdtReflection {
   lazy val u: c.universe.type = c.universe
   lazy val mirror: u.Mirror = c.mirror
@@ -302,7 +333,7 @@ class AdtHelperMacros(val c: Context) extends AdtReflection {
   implicit class XtensionSymbol(sym: Symbol) {
     def nonEmpty = {
       val tptAnns = sym.info match {
-        case AnnotatedType(anns, _) => anns
+        case atp: AnnotatedType => atp.annotations
         case _ => Nil
       }
       def hasNonEmpty(anns: List[Annotation]) = anns.exists(_.tree.tpe =:= typeOf[nonEmpty])
