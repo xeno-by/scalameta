@@ -316,7 +316,7 @@ private[meta] object inferTokens {
         case (_: Term.ApplyUnary, Some(_: Term.Select)) => true
         case _ =>                                         false
       }
-      def hasParens = tree.tokens.head.is[Token.LeftParen] && tree.tokens.last.is[Token.RightParen]
+      def hasParens = tree.tokens.head.is[Token.Lparen] && tree.tokens.last.is[Token.Rparen]
       if (needsParens && !hasParens) toks"(${deindent(tree.tokens)})"
       else deindent(tree.tokens)
     }

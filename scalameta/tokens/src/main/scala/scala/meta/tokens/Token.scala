@@ -74,25 +74,25 @@ object Token {
   // Symbolic keywords
   @fixed("#") class Hash extends Token
   @fixed(":") class Colon extends Token
-  @fixed("<%") class Viewbound extends Token
-  @freeform("<-") class LeftArrow extends Token
+  @fixed("<%") class Vbound extends Token
+  @freeform("<-") class Larrow extends Token
   @fixed("<:") class Subtype extends Token
   @fixed("=") class Equals extends Token
-  @freeform("=>") class RightArrow extends Token
+  @freeform("=>") class Rarrow extends Token
   @fixed(">:") class Supertype extends Token
   @fixed("@") class At extends Token
-  @fixed("_") class Underscore extends Token
+  @fixed("_") class Uscore extends Token
 
   // Delimiters
-  @fixed("(") class LeftParen extends Token
-  @fixed(")") class RightParen extends Token
+  @fixed("(") class Lparen extends Token
+  @fixed(")") class Rparen extends Token
   @fixed(",") class Comma extends Token
   @fixed(".") class Dot extends Token
-  @fixed(";") class Semicolon extends Token
-  @fixed("[") class LeftBracket extends Token
-  @fixed("]") class RightBracket extends Token
-  @fixed("{") class LeftBrace extends Token
-  @fixed("}") class RightBrace extends Token
+  @fixed(";") class Semi extends Token
+  @fixed("[") class Lbrack extends Token
+  @fixed("]") class Rbrack extends Token
+  @fixed("{") class Lbrace extends Token
+  @fixed("}") class Rbrace extends Token
 
   // Literals (include some keywords from above, constants, interpolations and xml)
   object Constant {

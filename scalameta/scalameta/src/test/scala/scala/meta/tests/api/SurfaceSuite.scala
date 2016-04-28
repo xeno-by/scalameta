@@ -323,10 +323,10 @@ class SurfaceSuite extends scala.meta.tests.ast.AstSuite {
       |scala.meta.tokens.Token.Interpolation.Start
       |scala.meta.tokens.Token.LF
       |scala.meta.tokens.Token.Lazy
-      |scala.meta.tokens.Token.LeftArrow
-      |scala.meta.tokens.Token.LeftBrace
-      |scala.meta.tokens.Token.LeftBracket
-      |scala.meta.tokens.Token.LeftParen
+      |scala.meta.tokens.Token.Larrow
+      |scala.meta.tokens.Token.Lbrace
+      |scala.meta.tokens.Token.Lbrack
+      |scala.meta.tokens.Token.Lparen
       |scala.meta.tokens.Token.Macro
       |scala.meta.tokens.Token.Match
       |scala.meta.tokens.Token.New
@@ -337,12 +337,12 @@ class SurfaceSuite extends scala.meta.tests.ast.AstSuite {
       |scala.meta.tokens.Token.Private
       |scala.meta.tokens.Token.Protected
       |scala.meta.tokens.Token.Return
-      |scala.meta.tokens.Token.RightArrow
-      |scala.meta.tokens.Token.RightBrace
-      |scala.meta.tokens.Token.RightBracket
-      |scala.meta.tokens.Token.RightParen
+      |scala.meta.tokens.Token.Rarrow
+      |scala.meta.tokens.Token.Rbrace
+      |scala.meta.tokens.Token.Rbrack
+      |scala.meta.tokens.Token.Rparen
       |scala.meta.tokens.Token.Sealed
-      |scala.meta.tokens.Token.Semicolon
+      |scala.meta.tokens.Token.Semi
       |scala.meta.tokens.Token.Space
       |scala.meta.tokens.Token.Subtype
       |scala.meta.tokens.Token.Super
@@ -354,10 +354,10 @@ class SurfaceSuite extends scala.meta.tests.ast.AstSuite {
       |scala.meta.tokens.Token.True
       |scala.meta.tokens.Token.Try
       |scala.meta.tokens.Token.Type
-      |scala.meta.tokens.Token.Underscore
+      |scala.meta.tokens.Token.Uscore
       |scala.meta.tokens.Token.Val
       |scala.meta.tokens.Token.Var
-      |scala.meta.tokens.Token.Viewbound
+      |scala.meta.tokens.Token.Vbound
       |scala.meta.tokens.Token.While
       |scala.meta.tokens.Token.With
       |scala.meta.tokens.Token.Xml
