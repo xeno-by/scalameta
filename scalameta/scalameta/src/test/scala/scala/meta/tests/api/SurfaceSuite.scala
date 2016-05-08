@@ -84,7 +84,6 @@ class SurfaceSuite extends scala.meta.tests.ast.AstSuite {
       |scala.meta.tokenizers.Tokenized.Success
       |scala.meta.tokens
       |scala.meta.tokens.Token
-      |scala.meta.tokens.Tokens
       |scala.meta.transversers
       |scala.meta.transversers.Transformer
       |scala.meta.transversers.Traverser
@@ -107,13 +106,13 @@ class SurfaceSuite extends scala.meta.tests.ast.AstSuite {
 
     // println(coreSurface.filter(_.startsWith("*")).sorted.mkString(EOL))
     assert(coreSurface.filter(_.startsWith("*")).sorted.mkString(EOL) === """
+      |* (scala.meta.Dialect, meta.tokens.Tokens).parse(implicit scala.meta.parsers.Parse[U]): scala.meta.parsers.Parsed[U]
+      |* (scala.meta.Dialect, meta.tokens.Tokens).syntax(implicit meta.prettyprinters.Syntax.Options): String
+      |* (scala.meta.Dialect, meta.tokens.Tokens).tokenize(implicit scala.meta.tokenizers.Tokenize): scala.meta.tokenizers.Tokenized
       |* (scala.meta.Dialect, scala.meta.Tree).syntax(implicit meta.prettyprinters.Syntax.Options): String
       |* (scala.meta.Dialect, scala.meta.inputs.Input).parse(implicit scala.meta.parsers.Parse[U]): scala.meta.parsers.Parsed[U]
       |* (scala.meta.Dialect, scala.meta.inputs.Input).tokenize(implicit scala.meta.tokenizers.Tokenize): scala.meta.tokenizers.Tokenized
       |* (scala.meta.Dialect, scala.meta.tokens.Token).syntax(implicit meta.prettyprinters.Syntax.Options): String
-      |* (scala.meta.Dialect, scala.meta.tokens.Tokens).parse(implicit scala.meta.parsers.Parse[U]): scala.meta.parsers.Parsed[U]
-      |* (scala.meta.Dialect, scala.meta.tokens.Tokens).syntax(implicit meta.prettyprinters.Syntax.Options): String
-      |* (scala.meta.Dialect, scala.meta.tokens.Tokens).tokenize(implicit scala.meta.tokenizers.Tokenize): scala.meta.tokenizers.Tokenized
       |* (scala.meta.inputs.Input, scala.meta.Dialect).parse(implicit scala.meta.parsers.Parse[U]): scala.meta.parsers.Parsed[U]
       |* (scala.meta.inputs.Input, scala.meta.Dialect).tokenize(implicit scala.meta.tokenizers.Tokenize): scala.meta.tokenizers.Tokenized
       |* T(implicit scala.meta.classifiers.Classifiable[T]).is(implicit scala.meta.classifiers.Classifier[T,U]): Boolean
@@ -124,9 +123,9 @@ class SurfaceSuite extends scala.meta.tests.ast.AstSuite {
       |* T.show(implicit Style[T]): String
       |* T.tokenize(implicit scala.meta.common.Convert[T,scala.meta.inputs.Input], scala.meta.tokenizers.Tokenize, scala.meta.Dialect): scala.meta.tokenizers.Tokenized
       |* scala.meta.Dialect.apply(T)(implicit scala.meta.common.Convert[T,scala.meta.inputs.Input]): (scala.meta.Dialect, scala.meta.inputs.Input)
+      |* scala.meta.Dialect.apply(meta.tokens.Tokens): (scala.meta.Dialect, meta.tokens.Tokens)
       |* scala.meta.Dialect.apply(scala.meta.Tree): (scala.meta.Dialect, scala.meta.Tree)
       |* scala.meta.Dialect.apply(scala.meta.tokens.Token): (scala.meta.Dialect, scala.meta.tokens.Token)
-      |* scala.meta.Dialect.apply(scala.meta.tokens.Tokens): (scala.meta.Dialect, scala.meta.tokens.Tokens)
       |* scala.meta.Pat.Type.tpe: scala.meta.Type
       |* scala.meta.Tree.collect(PartialFunction[scala.meta.Tree,T]): List[T]
       |* scala.meta.Tree.transform(PartialFunction[scala.meta.Tree,scala.meta.Tree]): scala.meta.Tree

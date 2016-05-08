@@ -41,12 +41,12 @@ package object meta extends classifiers.Api with classifiers.Aliases
     }
     def tokenize(implicit tokenize: scala.meta.tokenizers.Tokenize): scala.meta.tokenizers.Tokenized = {
       val (dialect, tokens) = dialectTokens
-      val input = Tokens.tokensToInput(tokens)
+      val input = Token.seqTokenToInput(tokens)
       tokenize.apply(input, dialect)
     }
     def parse[U](implicit parse: scala.meta.parsers.Parse[U]): scala.meta.parsers.Parsed[U] = {
       val (dialect, tokens) = dialectTokens
-      val input = Tokens.tokensToInput(tokens)
+      val input = Token.seqTokenToInput(tokens)
       parse.apply(input, dialect)
     }
   }

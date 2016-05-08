@@ -1,15 +1,18 @@
 package scala.meta
 package tokens
 
+import scala.{Seq => _}
+import scala.collection.immutable.Seq
 import org.scalameta.adt.{Liftables => AdtLiftables}
-import scala.meta.internal.tokens
-import scala.meta.internal.tokens._
-import scala.meta.inputs._
+import scala.meta.common._
 import scala.meta.classifiers._
 import scala.meta.dialects.Metalevel
+import scala.meta.inputs._
 import scala.meta.prettyprinters._
 import scala.meta.prettyprinters.Syntax.Options
 import scala.meta.internal.prettyprinters._
+import scala.meta.internal.tokens
+import scala.meta.internal.tokens._
 
 // NOTE: `start` and `end` are String.substring-style,
 // i.e. `start` is inclusive and `end` is not.
@@ -141,6 +144,10 @@ object Token {
   implicit def classifiable[T <: Token]: Classifiable[T] = null
   implicit def showStructure[T <: Token]: Structure[T] = TokenStructure.apply[T]
   implicit def showSyntax[T <: Token](implicit dialect: Dialect, options: Syntax.Options): Syntax[T] = TokenSyntax.apply[T](dialect, options)
+
+  implicit val seqTokenToInput: Convert[Seq[Token], Input] = Convert(tokens => Input.String(tokens.syntax))
+  implicit def showSeqStructure[T <: Seq[Token]]: Structure[T] = TokensStructure.apply[T]
+  implicit def showSeqSyntax[T <: Seq[Token]](implicit dialect: Dialect, options: Options): Syntax[T] = TokensSyntax.apply[T](dialect, options)
 }
 
 // NOTE: We have this unrelated code here, because of how materializeAdt works.
