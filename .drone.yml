@@ -3,7 +3,7 @@ build:
   pull: true
   commands:
     - git remote -v
-    - printenv | awk -F= '{print $1}'
+    - printenv | awk '$1 ~ /^CI/'
 
 matrix:
   SCALA_VERSION:
