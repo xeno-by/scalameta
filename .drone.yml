@@ -12,7 +12,9 @@ build:
         if [ "$signed" -eq "true" ] ; then
           echo "CLA check for $author successful";
         else
-          echo "Please sign the Scala CLA to contribute to scala.meta. Go to https://www.lightbend.com/contribute/cla/scala and then resubmit this pull request.";
+          echo "CLA check for $author failed";
+          echo "Please sign the Scala CLA to contribute to scala.meta.";
+          echo Go to https://www.lightbend.com/contribute/cla/scala and then resubmit this pull request.";
         fi;
       fi
 
