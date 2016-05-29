@@ -3,11 +3,10 @@ build:
   pull: true
   commands:
     - git remote -v
-    - echo $DRONE_REPO_SLUG
-    - echo $DRONE_BUILD_URL
-    - echo $DRONE_COMMIT
-    - echo $DRONE_BRANCH
-    - printenv | awk -F= '{print $1}'
+    - echo $CI_JOB_ID
+    - echo $CI_EVENT
+    - echo $CI_REPO
+    - echo $CI_BUILD_URL
 
 matrix:
   SCALA_VERSION:
