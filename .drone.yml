@@ -7,6 +7,7 @@ build:
     - echo $DRONE_BUILD_URL
     - echo $DRONE_COMMIT
     - echo $DRONE_BRANCH
+    - printenv | awk -F= '{print $1}'
 
 matrix:
   SCALA_VERSION:
