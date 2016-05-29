@@ -14,7 +14,7 @@ build:
         else
           echo "CLA check for $author failed";
           echo "Please sign the Scala CLA to contribute to scala.meta.";
-          echo Go to https://www.lightbend.com/contribute/cla/scala and then resubmit this pull request.";
+          echo "Go to https://www.lightbend.com/contribute/cla/scala and then resubmit this pull request.";
         fi;
       fi
 
