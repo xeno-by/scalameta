@@ -3,8 +3,8 @@ build:
   pull: true
   commands:
     - if [ -n "$CI_PULL_REQUEST" ] ; then
-        echo "Incoming pull request from https://github.com/$CI_REPO/pull/$CI_PULL_REQUEST"
-        author=$(curl -s "https://api.github.com/repos/$CI_REPO/pulls/$CI_PULL_REQUEST" | jq -r ".user.login")
+        echo "Incoming pull request from https://github.com/$CI_REPO/pull/$CI_PULL_REQUEST";
+        author=$(curl -s "https://api.github.com/repos/$CI_REPO/pulls/$CI_PULL_REQUEST" | jq -r ".user.login");
         if [ $? -ne 0 ] ; then exit 1; fi;
       fi
 
