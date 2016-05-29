@@ -2,9 +2,9 @@ build:
   image: ensime/ensime:v1.x-cache
   pull: true
   commands:
-    - git remote -v
-    - printenv | awk '$1 ~ /^CI/'
-    - echo "http://$CI_REPO/pull/$CI_PULL_REQUEST"
+    - if [ -n "$CI_PULL_REQUEST" ] ; then
+        echo "Detected pull request from https://github.com/$CI_REPO/pull/$CI_PULL_REQUEST";
+      fi
 
 matrix:
   SCALA_VERSION:
