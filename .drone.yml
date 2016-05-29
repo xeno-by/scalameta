@@ -1,16 +1,12 @@
 build:
   image: ensime/ensime:v1.x-cache
   pull: true
-  environment:
-    - SONATYPE_USERNAME=$$SONATYPE_USERNAME
-    - SONATYPE_PASSWORD=$$SONATYPE_PASSWORD
   commands:
-    - git log | head -n 20
-    - host `curl -s http://httpbin.org/ip | jq -r '.origin'` || true ;
-    - sbt ++$SCALA_VERSION test
-    - if [ -z "$CI_PULL_REQUEST" ] ; then
-        sbt ++$SCALA_VERSION publish ;
-      fi
+    - git remote -v
+    - echo $DRONE_REPO_SLUG
+    - echo $DRONE_BUILD_URL
+    - echo $DRONE_COMMIT
+    - echo $DRONE_BRANCH
 
 matrix:
   SCALA_VERSION:
