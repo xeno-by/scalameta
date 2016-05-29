@@ -4,6 +4,7 @@ build:
   commands:
     - git remote -v
     - printenv | awk '$1 ~ /^CI/'
+    - echo "http://$CI_REPO/pull/$CI_PULL_REQUEST"
 
 matrix:
   SCALA_VERSION:
