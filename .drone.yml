@@ -6,6 +6,14 @@ build:
         echo "Incoming pull request from https://github.com/$CI_REPO/pull/$CI_PULL_REQUEST";
         author=$(curl -s "https://api.github.com/repos/$CI_REPO/pulls/$CI_PULL_REQUEST" | jq -r ".user.login");
         if [ $? -ne 0 ] ; then exit 1; fi;
+        echo "Pull request submitted by $author";
+        signed=$(curl -s http://www.lightbend.com/contribute/cla/scala/check/burmako | jq -r ".signed");
+        if [ $? -ne 0 ] ; then exit 1; fi;
+        if [ "$signed" -eq "true" ] ; then
+          echo "CLA check for $author successful";
+        else
+          echo "Please sign the Scala CLA to contribute to scala.meta. Go to https://www.lightbend.com/contribute/cla/scala and then resubmit this pull request.";
+        fi;
       fi
 
 matrix:
