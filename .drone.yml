@@ -3,10 +3,7 @@ build:
   pull: true
   commands:
     - git remote -v
-    - echo $CI_JOB_ID
-    - echo $CI_EVENT
-    - echo $CI_REPO
-    - echo $CI_BUILD_URL
+    - printenv | awk -F= '{print $1}'
 
 matrix:
   SCALA_VERSION:
