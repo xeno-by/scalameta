@@ -50,8 +50,8 @@ test := {
       |Running "test" may take a really long time. Here are some other useful commands
       |that give a tighter edit/run/debug cycle.
       |- scalametaJVM/testQuick # Parser/Pretty-printer/Trees/...
-      |- contribJVM/testQuick   # contrib
-      |- scalahostNsc/test      # Semantic API tests
+      |- contribJVM/testQuick   # Contrib
+      |- scalahostNsc/test      # Semanticdb implementation for Scalac
       |- testOnlyJVM
       |- testOnlyJS
       |""".stripMargin)
@@ -82,6 +82,72 @@ packagedArtifacts := Map.empty
 unidocProjectFilter.in(ScalaUnidoc, unidoc) := inAnyProject
 console := console.in(scalametaJVM, Compile).value
 
+/** ======================== STARMETA ======================== **/
+
+lazy val starmetaIo = crossProject
+  .in(file("starmeta/io"))
+  .settings(
+    publishableSettings,
+    moduleName := "starmeta-io",
+    description := "Starmeta APIs for input/output"
+  )
+  .jsSettings(
+    npmDependencies in Compile += "shelljs" -> "0.7.7" // provides cross-platform pwd in JS
+  )
+  .jsConfigure(_.enablePlugins(ScalaJSBundlerPlugin))
+
+lazy val starmetaIoJVM = starmetaIo.jvm
+lazy val starmetaIoJs = starmetaIo.js
+
+lazy val starmetaInputs = crossProject
+  .in(file("starmeta/inputs"))
+  .settings(
+    publishableSettings,
+    moduleName := "starmeta-inputs",
+    description := "Starmeta APIs for source code"
+  )
+  .dependsOn(starmetaIo)
+  .jsConfigure(_.enablePlugins(ScalaJSBundlerPlugin))
+lazy val starmetaInputsJVM = starmetaInputs.jvm
+lazy val starmetaInputsJS = starmetaInputs.js
+
+lazy val starmetaSemanticdb = crossProject
+  .in(file("starmeta/semanticdb"))
+  .settings(
+    publishableSettings,
+    moduleName := "starmeta-semanticdb",
+    description := "Semantic database APIs",
+    // Protobuf setup for binary serialization.
+    PB.targets.in(Compile) := Seq(
+      scalapb.gen(
+        flatPackage = true // Don't append filename to package
+      ) -> sourceManaged.in(Compile).value
+    ),
+    PB.protoSources.in(Compile) := Seq(file("starmeta/semanticdb/shared/src/main/protobuf")),
+    libraryDependencies += "com.trueaccord.scalapb" %%% "scalapb-runtime" % scalapbVersion
+  )
+  .dependsOn(starmetaIo, starmetaInputs)
+lazy val starmetaSemanticdbJVM = starmetaSemanticdb.jvm
+lazy val starmetaSemanticdbJS = starmetaSemanticdb.js
+
+lazy val starmeta = crossProject
+  .in(file("starmeta/starmeta"))
+  .settings(
+    publishableSettings,
+    description := "Starmeta umbrella module that includes all public APIs",
+    exposePaths("starmeta", Test)
+  )
+  .jsConfigure(_.enablePlugins(ScalaJSBundlerPlugin))
+  .dependsOn(
+    starmetaInputs,
+    starmetaIo,
+    starmetaSemanticdb
+  )
+lazy val starmetaJVM = starmeta.jvm
+lazy val starmetaJS = starmeta.js
+
+/** ======================== SCALAMETA ======================== **/
+
 lazy val common = crossProject
   .in(file("scalameta/common"))
   .settings(
@@ -97,13 +163,9 @@ lazy val io = crossProject
   .in(file("scalameta/io"))
   .settings(
     publishableSettings,
-    description := "Scalameta APIs for JVM/JS agnostic IO."
+    description := "Scalameta APIs for input/output"
   )
-  .dependsOn(common)
-  .jsSettings(
-    npmDependencies in Compile += "shelljs" -> "0.7.7" // provides cross-platform pwd in JS
-  )
-  .jsConfigure(_.enablePlugins(ScalaJSBundlerPlugin))
+  .dependsOn(starmetaIo, common)
 
 lazy val ioJVM = io.jvm
 lazy val ioJS = io.js
@@ -123,11 +185,10 @@ lazy val inputs = crossProject
   .in(file("scalameta/inputs"))
   .settings(
     publishableSettings,
-    description := "Scalameta APIs for source code in textual format",
+    description := "Scalameta APIs for source code",
     enableMacros
   )
-  .dependsOn(common, io)
-  .jsConfigure(_.enablePlugins(ScalaJSBundlerPlugin))
+  .dependsOn(starmetaInputs, io, common)
 lazy val inputsJVM = inputs.jvm
 lazy val inputsJS = inputs.js
 
@@ -204,48 +265,17 @@ lazy val semantic = crossProject
   .in(file("scalameta/semantic"))
   .settings(
     publishableSettings,
-    description := "Scalameta semantic APIs",
-    // Protobuf setup for binary serialization.
-    PB.targets.in(Compile) := Seq(
-      scalapb.gen(
-        flatPackage = true // Don't append filename to package
-      ) -> sourceManaged.in(Compile).value
-    ),
-    PB.protoSources.in(Compile) := Seq(file("scalameta/semantic/shared/src/main/protobuf")),
-    libraryDependencies += "com.trueaccord.scalapb" %%% "scalapb-runtime" % scalapbVersion
+    description := "Scalameta semantic APIs"
   )
-  .dependsOn(common, parsers, trees)
+  .dependsOn(starmetaSemanticdb)
 lazy val semanticJVM = semantic.jvm
 lazy val semanticJS = semantic.js
-
-lazy val scalameta = crossProject
-  .in(file("scalameta/scalameta"))
-  .settings(
-    publishableSettings,
-    description := "Scalameta umbrella module that includes all public APIs",
-    exposePaths("scalameta", Test)
-  )
-  .jsConfigure(_.enablePlugins(ScalaJSBundlerPlugin))
-  .dependsOn(
-    common,
-    dialects,
-    parsers,
-    quasiquotes,
-    tokenizers,
-    transversers,
-    trees,
-    inputs,
-    io,
-    semantic
-  )
-lazy val scalametaJVM = scalameta.jvm
-lazy val scalametaJS = scalameta.js
 
 lazy val scalahostNsc = project
   .in(file("scalahost/nsc"))
   .settings(
     moduleName := "scalahost",
-    description := "Scala 2.x compiler plugin that persists the scalameta semantic DB on compile",
+    description := "Scala 2.x compiler plugin that generates semanticdb on compile",
     publishableSettings,
     mergeSettings,
     isFullCrossVersion,
@@ -253,15 +283,16 @@ lazy val scalahostNsc = project
     exposePaths("scalahost", Test),
     pomPostProcess := { node =>
       new RuleTransformer(new RewriteRule {
-        private def isScalametaDependency(node: XmlNode): Boolean = {
+        private def isAbsorbedDependency(node: XmlNode): Boolean = {
           def isArtifactId(node: XmlNode, fn: String => Boolean) =
             node.label == "artifactId" && fn(node.text)
           node.label == "dependency" && node.child.exists(child =>
+            isArtifactId(child, _.startsWith("starmeta-")) ||
             isArtifactId(child, _.startsWith("scalameta_")))
         }
         override def transform(node: XmlNode): XmlNodeSeq = node match {
-          case e: Elem if isScalametaDependency(node) =>
-            Comment("scalameta dependency has been merged into scalahost via sbt-assembly")
+          case e: Elem if isAbsorbedDependency(node) =>
+            Comment("this dependency has been absorbed via sbt-assembly")
           case _ => node
         }
       }).transform(node).head
@@ -286,6 +317,29 @@ lazy val scalahostIntegration = project
       )
     }
   )
+
+lazy val scalameta = crossProject
+  .in(file("scalameta/scalameta"))
+  .settings(
+    publishableSettings,
+    description := "Scalameta umbrella module that includes all public APIs",
+    exposePaths("scalameta", Test)
+  )
+  .jsConfigure(_.enablePlugins(ScalaJSBundlerPlugin))
+  .dependsOn(
+    common,
+    dialects,
+    parsers,
+    quasiquotes,
+    tokenizers,
+    transversers,
+    trees,
+    inputs,
+    io,
+    semantic
+  )
+lazy val scalametaJVM = scalameta.jvm
+lazy val scalametaJS = scalameta.js
 
 lazy val testkit = Project(id = "testkit", base = file("scalameta/testkit"))
   .settings(
