@@ -5,6 +5,9 @@ private[meta] trait Api {
 }
 
 private[meta] trait Aliases {
+  type Convert[A, B] = star.meta.inputs.Convert[A, B]
+  val Convert = star.meta.inputs.Convert
+
   type Input = star.meta.inputs.Input
   object Input {
     val None = star.meta.inputs.Input.None

@@ -44,7 +44,6 @@ class SurfaceSuite extends FunSuite {
       |scala.meta.classifiers.Classifiable *
       |scala.meta.classifiers.Classifier *
       |scala.meta.common
-      |scala.meta.common.Convert *
       |scala.meta.common.Optional *
       |scala.meta.dialects
       |scala.meta.dialects.Dotty *
@@ -92,6 +91,7 @@ class SurfaceSuite extends FunSuite {
       |scala.meta.transversers.Transformer
       |scala.meta.transversers.Traverser
       |scala.meta.trees
+      |star.meta.inputs.Convert
       |star.meta.inputs.Input
       |star.meta.inputs.Position
       |star.meta.io.AbsolutePath
@@ -145,10 +145,10 @@ class SurfaceSuite extends FunSuite {
       |* T(implicit scala.meta.classifiers.Classifiable[T]).isNot(implicit scala.meta.classifiers.Classifier[T,U]): Boolean
       |* T(implicit scala.meta.prettyprinters.Structure[T]).structure: String
       |* T(implicit scala.meta.prettyprinters.Syntax[T]).syntax: String
-      |* T.parse(implicit scala.meta.common.Convert[T,meta.inputs.Input], scala.meta.parsers.Parse[U], scala.meta.Dialect): scala.meta.parsers.Parsed[U]
+      |* T.parse(implicit star.meta.inputs.Convert[T,meta.inputs.Input], scala.meta.parsers.Parse[U], scala.meta.Dialect): scala.meta.parsers.Parsed[U]
       |* T.show(implicit Style[T]): String
-      |* T.tokenize(implicit scala.meta.common.Convert[T,meta.inputs.Input], scala.meta.tokenizers.Tokenize, scala.meta.Dialect): scala.meta.tokenizers.Tokenized
-      |* scala.meta.Dialect.apply(T)(implicit scala.meta.common.Convert[T,meta.inputs.Input]): (scala.meta.Dialect, meta.inputs.Input)
+      |* T.tokenize(implicit star.meta.inputs.Convert[T,meta.inputs.Input], scala.meta.tokenizers.Tokenize, scala.meta.Dialect): scala.meta.tokenizers.Tokenized
+      |* scala.meta.Dialect.apply(T)(implicit star.meta.inputs.Convert[T,meta.inputs.Input]): (scala.meta.Dialect, meta.inputs.Input)
       |* scala.meta.Dialect.apply(scala.meta.Tree): (scala.meta.Dialect, scala.meta.Tree)
       |* scala.meta.Dialect.apply(scala.meta.tokens.Token): (scala.meta.Dialect, scala.meta.tokens.Token)
       |* scala.meta.Dialect.apply(scala.meta.tokens.Tokens): (scala.meta.Dialect, scala.meta.tokens.Tokens)

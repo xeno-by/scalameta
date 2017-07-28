@@ -3,7 +3,6 @@ package tokens
 
 import scala.collection.immutable
 import org.scalameta.data._
-import scala.meta.common._
 import scala.meta.inputs._
 import scala.meta.prettyprinters._
 import scala.meta.internal.prettyprinters._

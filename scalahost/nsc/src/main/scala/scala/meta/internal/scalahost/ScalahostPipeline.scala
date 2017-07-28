@@ -3,12 +3,15 @@ package scalahost
 
 import java.io._
 import java.net.URI
+import java.nio.charset._
 import scala.compat.Platform.EOL
 import scala.tools.nsc.Phase
 import scala.tools.nsc.plugins.PluginComponent
 import scala.util.control.NonFatal
+import scala.util.matching
 import scala.{meta => m}
 import scala.meta.io._
+import scala.meta.internal.io.FileIO
 import scala.meta.internal.semantic.DatabaseOps
 import scala.meta.internal.semantic.{vfs => v}
 import scala.tools.nsc.doc.ScaladocGlobal
@@ -38,7 +41,27 @@ trait ScalahostPipeline extends DatabaseOps { self: ScalahostPlugin =>
           if (config.semanticdb.isDisabled || !unit.source.file.name.endsWith(".scala")) return
           val mminidb = m.Database(List(unit.toAttributes))
           mminidb.save(scalametaTargetroot, config.sourceroot)
-        } catch {
+
+          val rxThriftSource = """@com.twitter.scrooge.thriftSource\("(.*?)"\)""".r
+          rxThriftSource.findFirstMatchIn(unit.source.content) match {
+            case Some(result) =>
+              import thrift.meta._
+              val thriftInput = {
+                val path = RelativePath(result.group(1))
+                val contents = FileIO.slurp(path.toAbsolute, Charset.forName("UTF-8"))
+                m.Input.VirtualFile(path.toString, contents)
+              }
+              thriftInput.attribute match {
+                case Attributed.Success(_, _, attrs) =>
+                  val mminidb1 = m.Database(List(attrs))
+                  mminidb1.save(scalametaTargetroot, config.sourceroot)
+                case Attributed.Error(_, _, ex) =>
+                  throw ex
+              }
+            case None =>
+              // do nothing
+          }
+         } catch {
           case NonFatal(ex) =>
             val writer = new StringWriter()
             val path = unit.source.file.path
@@ -58,8 +81,8 @@ trait ScalahostPipeline extends DatabaseOps { self: ScalahostPlugin =>
       override def run(): Unit = {
         val vdb = v.Database.load(Classpath(scalametaTargetroot))
         val orphanedVentries = vdb.entries.filter(ventry => {
-          val scalaName = v.SemanticdbPaths.toScala(ventry.fragment.name)
-          !config.sourceroot.resolve(scalaName).isFile
+          val sourceName = v.SemanticdbPaths.toSource(ventry.fragment.name)
+          !config.sourceroot.resolve(sourceName).isFile
         })
         orphanedVentries.map(ve => {
           def cleanupUpwards(file: File): Unit = {

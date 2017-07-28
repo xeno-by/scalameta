@@ -8,28 +8,25 @@ import star.meta.io.RelativePath
 object SemanticdbPaths {
   private val semanticdbPrefix = RelativePath("META-INF").resolve("semanticdb")
   private val semanticdbExtension = "semanticdb"
-  private val scalaExtension = "scala"
 
   def isSemanticdb(path: RelativePath): Boolean = {
     path.toNIO.startsWith(semanticdbPrefix.toNIO) &&
     PathIO.extension(path.toNIO) == semanticdbExtension
   }
 
-  def toScala(path: RelativePath): RelativePath = {
+  def toSource(path: RelativePath): RelativePath = {
     require(isSemanticdb(path))
-    val scalaSibling =
-      path.resolveSibling(_.stripSuffix(semanticdbExtension) + scalaExtension)
-    semanticdbPrefix.relativize(scalaSibling)
+    val sourceSibling = path.resolveSibling(_.stripSuffix(semanticdbExtension))
+    semanticdbPrefix.relativize(sourceSibling)
   }
 
-  def isScala(path: RelativePath): Boolean = {
-    PathIO.extension(path.toNIO) == scalaExtension
+  def isSource(path: RelativePath): Boolean = {
+    !isSemanticdb(path)
   }
 
-  def fromScala(path: RelativePath): RelativePath = {
-    require(isScala(path))
-    val semanticdbSibling =
-      path.resolveSibling(_.stripSuffix(scalaExtension) + semanticdbExtension)
+  def fromSource(path: RelativePath): RelativePath = {
+    require(isSource(path))
+    val semanticdbSibling = path.resolveSibling(_ + "." + semanticdbExtension)
     semanticdbPrefix.resolve(semanticdbSibling)
   }
 }

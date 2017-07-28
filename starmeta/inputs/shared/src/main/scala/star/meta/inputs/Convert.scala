@@ -1,5 +1,5 @@
-package scala.meta
-package common
+package star.meta
+package inputs
 
 // NOTE: neither A nor B can have variance annotations
 // we can't turn A into -A because contravariant implicits don't work

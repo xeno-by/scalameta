@@ -1,7 +1,6 @@
 package scala.meta
 package tokenizers
 
-import scala.meta.common._
 import scala.meta.inputs._
 
 private[meta] trait Api {

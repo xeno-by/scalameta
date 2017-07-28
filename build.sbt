@@ -287,8 +287,10 @@ lazy val scalahostNsc = project
           def isArtifactId(node: XmlNode, fn: String => Boolean) =
             node.label == "artifactId" && fn(node.text)
           node.label == "dependency" && node.child.exists(child =>
-            isArtifactId(child, _.startsWith("starmeta-")) ||
-            isArtifactId(child, _.startsWith("scalameta_")))
+            isArtifactId(child, _.startsWith("starmeta")) ||
+            isArtifactId(child, _.startsWith("scalameta")) ||
+            isArtifactId(child, _.startsWith("thriftmeta")) ||
+            isArtifactId(child, _.contains("scala-parser-combinators")))
         }
         override def transform(node: XmlNode): XmlNodeSeq = node match {
           case e: Elem if isAbsorbedDependency(node) =>
@@ -298,7 +300,7 @@ lazy val scalahostNsc = project
       }).transform(node).head
     }
   )
-  .dependsOn(scalametaJVM, testkit % Test)
+  .dependsOn(scalametaJVM, thriftmeta, testkit % Test)
 
 lazy val scalahostIntegration = project
   .in(file("scalahost/integration"))
@@ -485,6 +487,19 @@ lazy val readme = scalatex
   .dependsOn(scalametaJVM)
   .enablePlugins(BuildInfoPlugin)
 
+/** ======================== THRIFTMETA ======================== **/
+
+lazy val thriftmeta = project
+  .in(file("thriftmeta/thriftmeta"))
+  .settings(
+    publishableSettings,
+    description := "Thrift metaprogramming APIs and semanticdb support",
+    libraryDependencies += "com.twitter" %% "scrooge-generator" % "4.18.0"
+  )
+  .dependsOn(
+    starmetaJVM
+  )
+
 // ==========================================
 // Settings
 // ==========================================
@@ -520,7 +535,7 @@ lazy val mergeSettings = Def.settings(
   logLevel.in(assembly) := Level.Error,
   assemblyJarName.in(assembly) :=
     name.value + "_" + scalaVersion.value + "-" + version.value + "-assembly.jar",
-  assemblyOption.in(assembly) ~= { _.copy(includeScala = false) },
+  assemblyOption.in(assembly) ~= { _.copy(includeScala = true) },
   Keys.`package`.in(Compile) := {
     val slimJar = Keys.`package`.in(Compile).value
     val fatJar =

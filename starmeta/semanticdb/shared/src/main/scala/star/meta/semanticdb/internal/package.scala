@@ -16,7 +16,7 @@ package object semanticdb {
       val ventries = sdatabase.entries.toIterator.map { sentry =>
         // TODO: Would it make sense to support multiclasspaths?
         // One use-case for this would be in-place updates of semanticdb files.
-        val vpath = v.SemanticdbPaths.fromScala(RelativePath(sentry.filename))
+        val vpath = v.SemanticdbPaths.fromSource(RelativePath(sentry.filename))
         val fragment = Fragment(targetroot, vpath)
         val bytes = s.Database(List(sentry)).toByteArray
         v.Entry.InMemory(fragment, bytes)
