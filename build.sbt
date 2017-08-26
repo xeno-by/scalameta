@@ -4,8 +4,6 @@ import scala.xml.{Node => XmlNode, NodeSeq => XmlNodeSeq, _}
 import scala.xml.transform.{RewriteRule, RuleTransformer}
 import org.scalajs.sbtplugin.ScalaJSCrossVersion
 import org.scalameta.os
-import UnidocKeys._
-import sbt.ScriptedPlugin._
 import com.trueaccord.scalapb.compiler.Version.scalapbVersion
 import Versions._
 
@@ -22,7 +20,6 @@ name := {
   "scalametaRoot"
 }
 nonPublishableSettings
-unidocSettings
 // ci-fast is not a CiCommand because `plz x.y.z test` is super slow,
 // it runs `test` sequentially in every defined module.
 commands += Command.command("ci-fast") { s =>
@@ -79,7 +76,6 @@ testOnlyJS := {
   val runParsersTest = test.in(parsersJS, Test).value
 }
 packagedArtifacts := Map.empty
-unidocProjectFilter.in(ScalaUnidoc, unidoc) := inAnyProject
 console := console.in(scalametaJVM, Compile).value
 
 /** ======================== LANGMETA ======================== **/
