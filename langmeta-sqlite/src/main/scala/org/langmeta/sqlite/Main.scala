@@ -66,6 +66,15 @@ object Main {
             }
           }
           val syntheticId = new Counter()
+          def reportProgress(): Unit = {
+            val buf = new StringBuilder
+            buf.append(s"$genuineDocuments documents: ")
+            buf.append(s"${nameId.value} names, ")
+            buf.append(s"${messageId.value} messages, ")
+            buf.append(s"${_symbolId.value} symbols, ")
+            buf.append(s"${syntheticId.value} synthetics")
+            println(buf.toString)
+          }
 
           semanticdbFilenames.foreach { semanticdbFilename =>
             val path = Paths.get(semanticdbFilename)
@@ -185,15 +194,7 @@ object Main {
                       syntheticStmt.executeUpdate()
                     }
 
-                    if ((genuineDocuments % 1000) == 0) {
-                      val buf = new StringBuilder
-                      buf.append(s"$genuineDocuments documents: ")
-                      buf.append(s"${nameId.value} names, ")
-                      buf.append(s"${messageId.value} messages, ")
-                      buf.append(s"${_symbolId.value} symbols, ")
-                      buf.append(s"${syntheticId.value} synthetics")
-                      println(buf.toString)
-                    }
+                    if ((genuineDocuments % 1000) == 0) reportProgress()
                 }
               }
             } catch {
@@ -214,6 +215,8 @@ object Main {
               symbolStmt.setInt(5, 0)
               symbolStmt.executeUpdate()
           }
+
+          if ((genuineDocuments % 1000) != 0) reportProgress()
         } finally {
           conn.commit()
           conn.close()
