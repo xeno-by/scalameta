@@ -45,11 +45,13 @@ create table symbol(
 
 create table synthetic(
   id int,
+  document int,
   start_line int,
   start_character int,
   end_line int,
   end_character int,
   text int,
   primary key (id),
+  foreign key (document) references document(id),
   foreign key (text) references document (id)
 );

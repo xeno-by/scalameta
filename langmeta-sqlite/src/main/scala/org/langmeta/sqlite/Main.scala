@@ -157,10 +157,11 @@ object Main {
 
                     document.synthetics.foreach { synthetic =>
                       syntheticStmt.setInt(1, syntheticId.next)
-                      syntheticStmt.setInt(2, synthetic.pos.toHi.startLine)
-                      syntheticStmt.setInt(3, synthetic.pos.toHi.startColumn)
-                      syntheticStmt.setInt(4, synthetic.pos.toHi.endLine)
-                      syntheticStmt.setInt(5, synthetic.pos.toHi.endColumn)
+                      syntheticStmt.setInt(2, documentRef)
+                      syntheticStmt.setInt(3, synthetic.pos.toHi.startLine)
+                      syntheticStmt.setInt(4, synthetic.pos.toHi.startColumn)
+                      syntheticStmt.setInt(5, synthetic.pos.toHi.endLine)
+                      syntheticStmt.setInt(6, synthetic.pos.toHi.endColumn)
                       val syntheticDocumentRef = {
                         documentStmt.setInt(1, documentId.next)
                         documentStmt.setString(2, null)
@@ -169,7 +170,7 @@ object Main {
                         documentStmt.executeUpdate()
                         documentId.value
                       }
-                      syntheticStmt.setInt(6, syntheticDocumentRef)
+                      syntheticStmt.setInt(7, syntheticDocumentRef)
                       synthetic.names.foreach { name =>
                         nameStmt.setInt(1, nameId.next)
                         nameStmt.setInt(2, syntheticDocumentRef)
