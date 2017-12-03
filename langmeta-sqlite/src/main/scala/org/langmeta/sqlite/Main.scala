@@ -186,14 +186,12 @@ object Main {
                     }
 
                     if ((genuineDocuments % 1000) == 0) {
-                      val semanticdbElapsed = System.nanoTime() - semanticdbStart
                       val buf = new StringBuilder
                       buf.append(s"$genuineDocuments documents: ")
                       buf.append(s"${nameId.value} names, ")
                       buf.append(s"${messageId.value} messages, ")
                       buf.append(s"${_symbolId.value} symbols, ")
                       buf.append(s"${syntheticId.value} synthetics")
-                      buf.append(s" (~${semanticdbElapsed / 1000000000}s) ")
                       println(buf.toString)
                     }
                 }
