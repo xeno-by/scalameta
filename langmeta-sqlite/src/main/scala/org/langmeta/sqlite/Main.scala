@@ -8,7 +8,8 @@ import scala.collection.mutable
 import scala.io.Codec
 import scala.reflect.classTag
 import scala.util.control.NonFatal
-import org.langmeta.internal.semanticdb.schema._
+import org.{langmeta => hi}
+import org.langmeta.internal.semanticdb.{schema => lo}
 
 object Main {
   def main(args: Array[String]): Unit = {
@@ -70,7 +71,7 @@ object Main {
             val path = Paths.get(semanticdbFilename)
             try {
               val bytes = Files.readAllBytes(path)
-              val db = Database.parseFrom(bytes)
+              val db = lo.Database.parseFrom(bytes)
               db.documents.foreach { document =>
                 documentsToPaths.get(document.filename) match {
                   case Some(existingPath) =>
@@ -80,6 +81,15 @@ object Main {
                   case None =>
                     genuineDocuments += 1
                     documentsToPaths(document.filename) = path
+
+                    val input = hi.Input.VirtualFile(document.filename, document.contents)
+                    implicit class PositionOps(position: Option[lo.Position]) {
+                      def toHi: hi.Position = {
+                        val start = position.get.start
+                        val end = position.get.end
+                        hi.Position.Range(input, start, end)
+                      }
+                    }
 
                     val documentRef = documentId.next
                     documentStmt.setInt(1, documentRef)
@@ -91,20 +101,24 @@ object Main {
                     document.names.foreach { name =>
                       nameStmt.setInt(1, nameId.next)
                       nameStmt.setInt(2, documentRef)
-                      nameStmt.setInt(3, name.position.get.start)
-                      nameStmt.setInt(4, name.position.get.end)
-                      nameStmt.setInt(5, symbolId(name.symbol))
-                      nameStmt.setBoolean(6, name.isDefinition)
+                      nameStmt.setInt(3, name.position.toHi.startLine)
+                      nameStmt.setInt(4, name.position.toHi.startColumn)
+                      nameStmt.setInt(5, name.position.toHi.endLine)
+                      nameStmt.setInt(6, name.position.toHi.endColumn)
+                      nameStmt.setInt(7, symbolId(name.symbol))
+                      nameStmt.setBoolean(8, name.isDefinition)
                       nameStmt.executeUpdate()
                     }
 
                     document.messages.foreach { message =>
                       messageStmt.setInt(1, messageId.next)
                       messageStmt.setInt(2, documentRef)
-                      messageStmt.setInt(3, message.position.get.start)
-                      messageStmt.setInt(4, message.position.get.end)
-                      messageStmt.setInt(5, message.severity.value)
-                      messageStmt.setString(6, message.text)
+                      messageStmt.setInt(3, message.position.toHi.startLine)
+                      messageStmt.setInt(4, message.position.toHi.startColumn)
+                      messageStmt.setInt(5, message.position.toHi.endLine)
+                      messageStmt.setInt(6, message.position.toHi.endColumn)
+                      messageStmt.setInt(7, message.severity.value)
+                      messageStmt.setString(8, message.text)
                       messageStmt.executeUpdate()
                     }
 
@@ -127,10 +141,12 @@ object Main {
                         symbol.denotation.get.names.foreach { name =>
                           nameStmt.setInt(1, nameId.next)
                           nameStmt.setInt(2, signatureDocumentRef)
-                          nameStmt.setInt(3, name.position.get.start)
-                          nameStmt.setInt(4, name.position.get.end)
-                          nameStmt.setInt(5, symbolId(name.symbol))
-                          nameStmt.setBoolean(6, name.isDefinition)
+                          nameStmt.setInt(3, 0)
+                          nameStmt.setInt(4, name.position.get.start)
+                          nameStmt.setInt(5, 0)
+                          nameStmt.setInt(6, name.position.get.end)
+                          nameStmt.setInt(7, symbolId(name.symbol))
+                          nameStmt.setBoolean(8, name.isDefinition)
                           nameStmt.executeUpdate()
                         }
                         symbolStmt.executeUpdate()
@@ -141,8 +157,10 @@ object Main {
 
                     document.synthetics.foreach { synthetic =>
                       syntheticStmt.setInt(1, syntheticId.next)
-                      syntheticStmt.setInt(2, synthetic.pos.get.start)
-                      syntheticStmt.setInt(3, synthetic.pos.get.end)
+                      syntheticStmt.setInt(2, synthetic.pos.toHi.startLine)
+                      syntheticStmt.setInt(3, synthetic.pos.toHi.startColumn)
+                      syntheticStmt.setInt(4, synthetic.pos.toHi.endLine)
+                      syntheticStmt.setInt(5, synthetic.pos.toHi.endColumn)
                       val syntheticDocumentRef = {
                         documentStmt.setInt(1, documentId.next)
                         documentStmt.setString(2, null)
@@ -151,14 +169,16 @@ object Main {
                         documentStmt.executeUpdate()
                         documentId.value
                       }
-                      syntheticStmt.setInt(4, syntheticDocumentRef)
+                      syntheticStmt.setInt(6, syntheticDocumentRef)
                       synthetic.names.foreach { name =>
                         nameStmt.setInt(1, nameId.next)
                         nameStmt.setInt(2, syntheticDocumentRef)
-                        nameStmt.setInt(3, name.position.get.start)
-                        nameStmt.setInt(4, name.position.get.end)
-                        nameStmt.setInt(5, symbolId(name.symbol))
-                        nameStmt.setBoolean(6, name.isDefinition)
+                        nameStmt.setInt(3, 0)
+                        nameStmt.setInt(4, name.position.get.start)
+                        nameStmt.setInt(5, 0)
+                        nameStmt.setInt(6, name.position.get.start)
+                        nameStmt.setInt(7, symbolId(name.symbol))
+                        nameStmt.setBoolean(8, name.isDefinition)
                         nameStmt.executeUpdate()
                       }
                       syntheticStmt.executeUpdate()

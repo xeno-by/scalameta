@@ -9,8 +9,10 @@ create table document(
 create table name(
   id int,
   document int,
-  start int,
-  end int,
+  start_line int,
+  start_character int,
+  end_line int,
+  end_character int,
   symbol int,
   is_definition boolean,
   primary key (id),
@@ -21,8 +23,10 @@ create table name(
 create table message(
   id int,
   document int,
-  start int,
-  end int,
+  start_line int,
+  start_character int,
+  end_line int,
+  end_character int,
   severity int,
   text text,
   primary key (id),
@@ -41,8 +45,10 @@ create table symbol(
 
 create table synthetic(
   id int,
-  start int,
-  end int,
+  start_line int,
+  start_character int,
+  end_line int,
+  end_character int,
   text int,
   primary key (id),
   foreign key (text) references document (id)
