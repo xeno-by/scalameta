@@ -8,18 +8,29 @@ import scala.collection.mutable
 import scala.io.Codec
 import scala.reflect.classTag
 import scala.util.control.NonFatal
+import ammonite.ops.%%
+import ammonite.ops.ImplicitWd._
 import org.{langmeta => hi}
 import org.langmeta.internal.semanticdb.{schema => lo}
 
 object Main {
   def main(args: Array[String]): Unit = {
     args match {
-      case Array(sqliteFilename, semanticdbFilenames @ _*) =>
+      case Array(sqliteGlob, semanticdbGlobs @ _*) =>
+        val sqliteFilename = sqliteGlob.replace("~", sys.props("user.home"))
+        if (Files.exists(Paths.get(sqliteFilename))) sys.error(s"$sqliteFilename already exists")
+        val semanticdbFilenames = semanticdbGlobs.flatMap { semanticdbGlob =>
+          val expandGlob = s"""
+            |import glob, os
+            |for filename in glob.glob(os.path.expanduser("$semanticdbGlob")):
+            |  print filename
+          """.trim.stripMargin
+          %%("python", "-c", expandGlob).out.lines
+        }
+
         val appStart = System.nanoTime()
         var genuineDocuments = 0
         class Counter { var value = 0; def next() = { value += 1; value }; }
-        val sqlitePath = Paths.get(sqliteFilename)
-        if (Files.exists(sqlitePath)) sys.error(s"$sqlitePath already exists")
         val conn = DriverManager.getConnection(s"jdbc:sqlite:$sqliteFilename")
         conn.setAutoCommit(false)
         try {

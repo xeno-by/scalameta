@@ -95,6 +95,7 @@ lazy val langmetaSqlite = project
     description := "App to generate sqlite databases from semanticdb files",
     publishableSettings,
     mimaPreviousArtifacts := Set.empty,
+    libraryDependencies += "com.lihaoyi" %% "ammonite-ops" % "1.0.3",
     libraryDependencies += "org.xerial" % "sqlite-jdbc" % "3.21.0"
   )
   .dependsOn(langmetaJVM)
