@@ -88,10 +88,9 @@ lazy val langmeta = crossProject
 lazy val langmetaJVM = langmeta.jvm
 lazy val langmetaJS = langmeta.js
 
-lazy val langmetaSqlite = project
-  .in(file("langmeta-sqlite"))
+lazy val langmetaSqliteJVM = project
+  .in(file("langmeta/sqlite"))
   .settings(
-    moduleName := "langmeta-sqlite",
     description := "App to generate sqlite databases from semanticdb files",
     publishableSettings,
     mimaPreviousArtifacts := Set.empty,
