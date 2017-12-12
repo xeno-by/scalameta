@@ -96,7 +96,7 @@ object Index {
                 documentsToPaths.get(document.filename) match {
                   case Some(existingPath) =>
                     val what = document.filename
-                    val details = "both $existingPath and $path"
+                    val details = s"both $existingPath and $path"
                     println(s"Duplicate document filename $what in $details")
                   case None =>
                     genuineDocuments += 1
