@@ -13,7 +13,7 @@ import ammonite.ops.ImplicitWd._
 import org.{langmeta => hi}
 import org.langmeta.internal.semanticdb.{schema => lo}
 
-object Main {
+object Index {
   def main(args: Array[String]): Unit = {
     args match {
       case Array(connString, semanticdbGlobs @ _*) =>
@@ -242,7 +242,7 @@ object Main {
           }
         }
       case _ =>
-        val objectName = classTag[Main.type].toString.stripSuffix("$")
+        val objectName = classTag[Index.type].toString.stripSuffix("$")
         println(s"usage: $objectName <connection string> [<glob> <glob> ...]")
         sys.exit(1)
     }
