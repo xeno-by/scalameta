@@ -91,6 +91,7 @@ lazy val langmetaJS = langmeta.js
 lazy val langmetaSqlJVM = project
   .in(file("langmeta/sql"))
   .settings(
+    moduleName := "langmeta-sql",
     description := "App to generate sql databases from semanticdb files",
     publishableSettings,
     mimaPreviousArtifacts := Set.empty,
