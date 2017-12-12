@@ -88,14 +88,15 @@ lazy val langmeta = crossProject
 lazy val langmetaJVM = langmeta.jvm
 lazy val langmetaJS = langmeta.js
 
-lazy val langmetaSqliteJVM = project
-  .in(file("langmeta/sqlite"))
+lazy val langmetaSqlJVM = project
+  .in(file("langmeta/sql"))
   .settings(
-    description := "App to generate sqlite databases from semanticdb files",
+    description := "App to generate sql databases from semanticdb files",
     publishableSettings,
     mimaPreviousArtifacts := Set.empty,
     libraryDependencies += "com.lihaoyi" %% "ammonite-ops" % "1.0.3",
-    libraryDependencies += "org.xerial" % "sqlite-jdbc" % "3.21.0"
+    libraryDependencies += "org.xerial" % "sqlite-jdbc" % "3.21.0",
+    libraryDependencies += "mysql" % "mysql-connector-java" % "8.0.8-dmr"
   )
   .dependsOn(langmetaJVM)
 

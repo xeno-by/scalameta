@@ -1,4 +1,4 @@
-package org.langmeta.sqlite
+package org.langmeta.sql
 
 import java.io._
 import java.nio.file._
@@ -16,9 +16,7 @@ import org.langmeta.internal.semanticdb.{schema => lo}
 object Main {
   def main(args: Array[String]): Unit = {
     args match {
-      case Array(sqliteGlob, semanticdbGlobs @ _*) =>
-        val sqliteFilename = sqliteGlob.replace("~", sys.props("user.home"))
-        if (Files.exists(Paths.get(sqliteFilename))) sys.error(s"$sqliteFilename already exists")
+      case Array(connString, semanticdbGlobs @ _*) =>
         val semanticdbFilenames = semanticdbGlobs.flatMap { semanticdbGlob =>
           val expandGlob = s"""
             |import glob, os
@@ -31,7 +29,9 @@ object Main {
         val appStart = System.nanoTime()
         var genuineDocuments = 0
         class Counter { var value = 0; def next() = { value += 1; value }; }
-        val conn = DriverManager.getConnection(s"jdbc:sqlite:$sqliteFilename")
+        Class.forName("org.sqlite.JDBC")
+        Class.forName("com.mysql.cj.jdbc.Driver")
+        val conn = DriverManager.getConnection(connString)
         conn.setAutoCommit(false)
         try {
           val ddlUrl = getClass.getClassLoader.getResource("semanticdb.ddl")
@@ -232,15 +232,18 @@ object Main {
           conn.commit()
           conn.close()
           val appCPU = (System.nanoTime() - appStart) * 1.0 / 1000000000
-          val appDisk = new File(sqliteFilename).length * 1.0 / 1024 / 1024
           val appPerformance = genuineDocuments / appCPU
           println(s"CPU time: ${"%.3f".format(appCPU)}s")
-          println(s"Disk size: ${"%.1f".format(appDisk)} MB")
           println(s"Performance: ${"%.3f".format(appPerformance)} documents/s")
+          if (connString.startsWith("jdbc:sqlite:")) {
+            val sqliteFilename = connString.stripPrefix("jdbc:sqlite:")
+            val appDisk = new File(sqliteFilename).length * 1.0 / 1024 / 1024
+            println(s"Disk size: ${"%.1f".format(appDisk)} MB")
+          }
         }
       case _ =>
         val objectName = classTag[Main.type].toString.stripSuffix("$")
-        println(s"usage: $objectName </path/to/sqlite.db> [<glob> <glob> ...]")
+        println(s"usage: $objectName <connection string> [<glob> <glob> ...]")
         sys.exit(1)
     }
   }
