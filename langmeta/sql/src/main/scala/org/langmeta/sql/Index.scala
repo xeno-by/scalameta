@@ -119,7 +119,7 @@ object Index {
                     documentStmt.setString(2, document.filename)
                     documentStmt.setString(3, "")
                     documentStmt.setString(4, document.language)
-                    documentStmt.executeUpdate()
+                    documentStmt.addBatch()
 
                     document.names.foreach { name =>
                       nameStmt.setInt(1, nameId.next)
@@ -130,7 +130,7 @@ object Index {
                       nameStmt.setInt(6, name.position.toHi.endColumn)
                       nameStmt.setInt(7, symbolId(name.symbol))
                       nameStmt.setBoolean(8, name.isDefinition)
-                      nameStmt.executeUpdate()
+                      nameStmt.addBatch()
                     }
 
                     document.messages.foreach { message =>
@@ -142,7 +142,7 @@ object Index {
                       messageStmt.setInt(6, message.position.toHi.endColumn)
                       messageStmt.setInt(7, message.severity.value)
                       messageStmt.setString(8, message.text)
-                      messageStmt.executeUpdate()
+                      messageStmt.addBatch()
                     }
 
                     document.symbols.foreach { symbol =>
@@ -157,7 +157,7 @@ object Index {
                           documentStmt.setString(2, null)
                           documentStmt.setString(3, symbol.denotation.get.signature)
                           documentStmt.setString(4, null)
-                          documentStmt.executeUpdate()
+                          documentStmt.addBatch()
                           documentId.value
                         }
                         symbolStmt.setInt(5, signatureDocumentRef)
@@ -170,9 +170,9 @@ object Index {
                           nameStmt.setInt(6, name.position.get.end)
                           nameStmt.setInt(7, symbolId(name.symbol))
                           nameStmt.setBoolean(8, name.isDefinition)
-                          nameStmt.executeUpdate()
+                          nameStmt.addBatch()
                         }
-                        symbolStmt.executeUpdate()
+                        symbolStmt.addBatch()
                         symbolTodo.remove(symbolRef)
                         symbolDone.add(symbolRef)
                       }
@@ -190,7 +190,7 @@ object Index {
                         documentStmt.setString(2, null)
                         documentStmt.setString(3, synthetic.text)
                         documentStmt.setString(4, null)
-                        documentStmt.executeUpdate()
+                        documentStmt.addBatch()
                         documentId.value
                       }
                       syntheticStmt.setInt(7, syntheticDocumentRef)
@@ -203,9 +203,9 @@ object Index {
                         nameStmt.setInt(6, name.position.get.start)
                         nameStmt.setInt(7, symbolId(name.symbol))
                         nameStmt.setBoolean(8, name.isDefinition)
-                        nameStmt.executeUpdate()
+                        nameStmt.addBatch()
                       }
-                      syntheticStmt.executeUpdate()
+                      syntheticStmt.addBatch()
                     }
 
                     if ((genuineDocuments % 10) == 0) reportProgress()
@@ -227,8 +227,19 @@ object Index {
               symbolStmt.setInt(3, 0)
               symbolStmt.setString(4, null)
               symbolStmt.setInt(5, 0)
-              symbolStmt.executeUpdate()
+              symbolStmt.addBatch()
           }
+
+          println("Executing document batch...")
+          documentStmt.executeBatch()
+          println("Executing name batch...")
+          nameStmt.executeBatch()
+          println("Executing message batch...")
+          messageStmt.executeBatch()
+          println("Executing symbol batch...")
+          symbolStmt.executeBatch()
+          println("Executing synthetic batch...")
+          syntheticStmt.executeBatch()
 
           if ((genuineDocuments % 10) != 0) reportProgress()
         } finally {
