@@ -117,7 +117,7 @@ object Index {
                     val documentRef = documentId.next
                     documentStmt.setInt(1, documentRef)
                     documentStmt.setString(2, document.filename)
-                    documentStmt.setString(3, document.contents)
+                    documentStmt.setString(3, "")
                     documentStmt.setString(4, document.language)
                     documentStmt.executeUpdate()
 
