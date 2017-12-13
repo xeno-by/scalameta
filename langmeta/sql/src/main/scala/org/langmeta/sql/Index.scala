@@ -258,6 +258,7 @@ object Index {
       case _ =>
         val objectName = classTag[Index.type].toString.stripSuffix("$")
         println(s"usage: $objectName <connection string> [<glob> <glob> ...]")
+        println(s"If connecting to MySQL ensure rewriteBatchedStatements=true is set in connection string for best performance")
         sys.exit(1)
     }
   }
