@@ -208,7 +208,7 @@ object Index {
                       syntheticStmt.executeUpdate()
                     }
 
-                    if ((genuineDocuments % 1000) == 0) reportProgress()
+                    if ((genuineDocuments % 10) == 0) reportProgress()
                 }
               }
             } catch {
@@ -230,7 +230,7 @@ object Index {
               symbolStmt.executeUpdate()
           }
 
-          if ((genuineDocuments % 1000) != 0) reportProgress()
+          if ((genuineDocuments % 10) != 0) reportProgress()
         } finally {
           conn.commit()
           conn.close()
