@@ -1,51 +1,57 @@
-create table document(
-  id int,
-  filename text,
-  contents text,
-  language text,
-  primary key (id)
+DROP TABLE IF EXISTS `document`;
+
+CREATE TABLE document(
+  id INT,
+  filename TEXT,
+  contents MEDIUMTEXT,
+  language TEXT,
+  PRIMARY KEY (id)
 );
 
-create table name(
-  id int,
-  document int,
-  start_line int,
-  start_character int,
-  end_line int,
-  end_character int,
-  symbol int,
+DROP TABLE IF EXISTS `name`;
+CREATE TABLE name(
+  id INT,
+  document INT,
+  start_line INT,
+  start_character INT,
+  end_line INT,
+  end_character INT,
+  symbol INT,
   is_definition boolean,
-  primary key (id)
+  PRIMARY KEY (id)
 );
 
-create table message(
-  id int,
-  document int,
-  start_line int,
-  start_character int,
-  end_line int,
-  end_character int,
-  severity int,
-  text text,
-  primary key (id)
+DROP TABLE IF EXISTS `message`;
+CREATE TABLE message(
+  id INT,
+  document INT,
+  start_line INT,
+  start_character INT,
+  end_line INT,
+  end_character INT,
+  severity INT,
+  text TEXT,
+  PRIMARY KEY (id)
 );
 
-create table symbol(
-  id int,
-  symbol text,
-  flags int,
-  name text,
-  signature int,
-  primary key (id)
+DROP TABLE IF EXISTS `symbol`;
+CREATE TABLE symbol(
+  id INT,
+  symbol TEXT,
+  flags INT,
+  name TEXT,
+  signature INT,
+  PRIMARY KEY (id)
 );
 
-create table synthetic(
-  id int,
-  document int,
-  start_line int,
-  start_character int,
-  end_line int,
-  end_character int,
-  text int,
-  primary key (id)
+DROP TABLE IF EXISTS `synthetic`;
+CREATE TABLE synthetic(
+  id INT,
+  document INT,
+  start_line INT,
+  start_character INT,
+  end_line INT,
+  end_character INT,
+  text INT,
+  PRIMARY KEY (id)
 );
