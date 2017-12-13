@@ -15,8 +15,9 @@ import org.langmeta.internal.semanticdb.{schema => lo}
 
 object Index {
   def main(args: Array[String]): Unit = {
+    val connRegex = "jdbc:(.*?):.*".r
     args match {
-      case Array(connString, semanticdbGlobs @ _*) =>
+      case Array(connString @ connRegex(database), semanticdbGlobs @ _*) =>
         val semanticdbFilenames = semanticdbGlobs.flatMap { semanticdbGlob =>
           val expandGlob = s"""
             |import glob, os
@@ -34,8 +35,10 @@ object Index {
         val conn = DriverManager.getConnection(connString)
         conn.setAutoCommit(false)
         try {
-          val ddlUrl = getClass.getClassLoader.getResource("semanticdb.ddl")
+          val ddlName = s"semanticdb.$database.ddl"
+          val ddlUrl = getClass.getClassLoader.getResource(ddlName)
           val ddlStream = ddlUrl.openStream
+          if (ddlStream == null) sys.error(s"failed to load $ddlName")
           val ddl = scala.io.Source.fromInputStream(ddlStream)(Codec.UTF8)
           val ddlStmt = conn.createStatement()
           ddlStmt.executeUpdate(ddl.mkString)
@@ -235,7 +238,7 @@ object Index {
           val appPerformance = genuineDocuments / appCPU
           println(s"CPU time: ${"%.3f".format(appCPU)}s")
           println(s"Performance: ${"%.3f".format(appPerformance)} documents/s")
-          if (connString.startsWith("jdbc:sqlite:")) {
+          if (database == "sqlite") {
             val sqliteFilename = connString.stripPrefix("jdbc:sqlite:")
             val appDisk = new File(sqliteFilename).length * 1.0 / 1024 / 1024
             println(s"Disk size: ${"%.1f".format(appDisk)} MB")
