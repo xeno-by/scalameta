@@ -60,6 +60,24 @@ object Index {
           val symbolStmt = tableInsertStmt("symbol")
           val syntheticStmt = tableInsertStmt("synthetic")
 
+          def persistBatch = {
+            println("Executing document batch...")
+            documentStmt.executeBatch()
+            conn.commit()
+            println("Executing name batch...")
+            nameStmt.executeBatch()
+            conn.commit()
+            println("Executing message batch...")
+            messageStmt.executeBatch()
+            conn.commit()
+            println("Executing symbol batch...")
+            symbolStmt.executeBatch()
+            conn.commit()
+            println("Executing synthetic batch...")
+            syntheticStmt.executeBatch()
+            conn.commit()
+          }
+
           val semanticdbStart = System.nanoTime()
           val documentsToPaths = mutable.Map[String, Path]()
           var documentId = new Counter()
@@ -216,6 +234,8 @@ object Index {
                 println(s"Error processing $path")
                 ex.printStackTrace
             }
+
+            persistBatch
           }
 
           // NOTE: Remaining symbols that haven't yet been mentioned
@@ -230,19 +250,11 @@ object Index {
               symbolStmt.addBatch()
           }
 
-          println("Executing document batch...")
-          documentStmt.executeBatch()
-          println("Executing name batch...")
-          nameStmt.executeBatch()
-          println("Executing message batch...")
-          messageStmt.executeBatch()
-          println("Executing symbol batch...")
-          symbolStmt.executeBatch()
-          println("Executing synthetic batch...")
-          syntheticStmt.executeBatch()
+          persistBatch
 
           if ((genuineDocuments % 10) != 0) reportProgress()
         } finally {
+          //commit more often
           conn.commit()
           conn.close()
           val appCPU = (System.nanoTime() - appStart) * 1.0 / 1000000000
