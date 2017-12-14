@@ -60,7 +60,7 @@ object Index {
           val symbolStmt = tableInsertStmt("symbol")
           val syntheticStmt = tableInsertStmt("synthetic")
 
-          def persistBatch = {
+          def persistBatch() = {
             println("Executing document batch...")
             documentStmt.executeBatch()
             conn.commit()
@@ -235,7 +235,7 @@ object Index {
                 ex.printStackTrace
             }
 
-            persistBatch
+            persistBatch()
           }
 
           // NOTE: Remaining symbols that haven't yet been mentioned
@@ -250,7 +250,7 @@ object Index {
               symbolStmt.addBatch()
           }
 
-          persistBatch
+          persistBatch()
 
           if ((genuineDocuments % 10) != 0) reportProgress()
         } finally {
