@@ -5,7 +5,6 @@ create table document(
   language text,
   primary key (id)
 );
-create index document_filename on document (filename);
 
 create table name(
   id int,
@@ -16,12 +15,10 @@ create table name(
   end_character int,
   symbol int,
   is_definition boolean,
-  primary key (id),
+  primary key (id)
   foreign key (document) references document (id),
   foreign key (symbol) references symbol (id)
 );
-create index name_document on name (document);
-create index name_symbol on name (symbol);
 
 create table message(
   id int,

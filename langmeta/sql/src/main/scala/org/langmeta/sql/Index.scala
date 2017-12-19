@@ -35,16 +35,12 @@ object Index {
         val conn = DriverManager.getConnection(connString)
         conn.setAutoCommit(false)
         try {
-          val ddlName = s"semanticdb.$database.ddl"
-          val ddlUrl = getClass.getClassLoader.getResource(ddlName)
-          val ddlStream = ddlUrl.openStream
-          if (ddlStream == null) sys.error(s"failed to load $ddlName")
-          val ddl = scala.io.Source.fromInputStream(ddlStream)(Codec.UTF8)
-          val ddlStmt = conn.createStatement()
-          ddlStmt.executeUpdate(ddl.mkString)
+          val preImportSql = loadSql("semanticdbPreImport", database)
+          val statement = conn.createStatement()
+          statement.executeUpdate(preImportSql.mkString)
 
           def tableInsertStmt(table: String): PreparedStatement = {
-            val rs = ddlStmt.executeQuery("select * from " + table)
+            val rs = statement.executeQuery("select * from " + table)
             val rsmd = rs.getMetaData()
             val columnCount = rsmd.getColumnCount()
             val columnNames = 1.to(columnCount).map(rsmd.getColumnName)
@@ -253,6 +249,9 @@ object Index {
           persistBatch()
 
           if ((genuineDocuments % 10) != 0) reportProgress()
+
+          val postImportSql = loadSql("semanticdbPostImport", database)
+          statement.executeUpdate(preImportSql.mkString)
         } finally {
           //commit more often
           conn.commit()
@@ -272,6 +271,19 @@ object Index {
         println(s"usage: $objectName <connection string> [<glob> <glob> ...]")
         println(s"If connecting to MySQL ensure rewriteBatchedStatements=true is set in connection string for best performance")
         sys.exit(1)
+    }
+  }
+
+  def loadSql(sqlName: String, databaseKind: String): String = {
+    val fileName = s"$sqlName.$databaseKind.sql"
+    val fileUrl = getClass.getClassLoader.getResource(fileName)
+    val fileStream = fileUrl.openStream
+    if (fileStream == null) sys.error(s"failed to load $fileName")
+    try {
+      scala.io.Source.fromInputStream(fileStream)(Codec.UTF8).mkString
+    }
+    finally {
+      fileStream.close()
     }
   }
 }
