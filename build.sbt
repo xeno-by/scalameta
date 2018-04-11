@@ -110,6 +110,7 @@ lazy val semanticdb3 = crossProject(JSPlatform, JVMPlatform, NativePlatform)
   .settings(
     publishableSettings,
     protobufSettings,
+    description := "SemanticDB bindings for Scala",
     PB.protoSources.in(Compile) := Seq(file("semanticdb/semanticdb3"))
   )
   .nativeSettings(nativeSettings)
@@ -119,6 +120,7 @@ lazy val semanticdb3 = crossProject(JSPlatform, JVMPlatform, NativePlatform)
   .jsSettings(
     crossScalaVersions := List(LatestScala211, LatestScala212)
   )
+  .dependsOn(pretty)
 lazy val semanticdb3JVM = semanticdb3.jvm
 lazy val semanticdb3JS = semanticdb3.js
 lazy val semanticdb3Native = semanticdb3.native
@@ -205,6 +207,18 @@ lazy val metap = crossProject(JSPlatform, JVMPlatform, NativePlatform)
 lazy val metapJVM = metap.jvm
 lazy val metapJS = metap.js
 lazy val metapNative = metap.native
+
+lazy val pretty = crossProject(JSPlatform, JVMPlatform, NativePlatform)
+  .crossType(CrossType.Pure)
+  .in(file("semanticdb/pretty"))
+  .settings(
+    publishableSettings,
+    description := "General-purpose prettyprinting infrastructure"
+  )
+  .nativeSettings(nativeSettings)
+lazy val prettyJVM = pretty.jvm
+lazy val prettyJS = pretty.js
+lazy val prettyNative = pretty.native
 
 /** ======================== LANGMETA ======================== **/
 lazy val langmeta = crossProject(JSPlatform, JVMPlatform)
