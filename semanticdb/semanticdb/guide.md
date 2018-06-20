@@ -622,6 +622,7 @@ documents {
     accessibility {
       tag: PUBLIC
     }
+    owner: "_empty_.",
     language: SCALA
   }
   ...

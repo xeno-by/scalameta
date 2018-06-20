@@ -185,7 +185,8 @@ trait SymbolInformationOps { self: SemanticdbOps =>
         name = name,
         tpe = tpe(linkMode),
         annotations = annotations,
-        accessibility = accessibility
+        accessibility = accessibility,
+        owner = gsym.owner.ssym
       )
     }
   }

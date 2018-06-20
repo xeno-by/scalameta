@@ -243,7 +243,8 @@ trait SymbolInformationOps { self: Scalacp =>
         name = name,
         tpe = tpe(linkMode),
         annotations = annotations,
-        accessibility = accessibility
+        accessibility = accessibility,
+        owner = sym.ssym.owner
       )
     }
   }

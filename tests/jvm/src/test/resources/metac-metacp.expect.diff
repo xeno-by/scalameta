@@ -1,3 +1,20 @@
+===============
+_empty_.C#m2().
+===============
+--- metac
++++ metacp
+                       tag: PUBLIC
+                       symbol: ""
+-                    owner: "_empty_.C#m2()."
++                    owner: ""
+                     language: SCALA
+               tag: PUBLIC
+               symbol: ""
+-            owner: "_empty_.C#m2()."
++            owner: ""
+             language: SCALA
+
+
 ===========
 advanced.D#
 ===========
@@ -5,11 +22,11 @@ advanced.D#
 +++ metacp
                    typeRef {
                      prefix {
--                    symbol: "local14"
+-                    symbol: "local19"
 +                    symbol: "advanced.D#_#"
              declarations {
                hardlinks {
--                symbol: "local14"
+-                symbol: "local19"
 +                symbol: "advanced.D#_#"
                  kind: TYPE
                  properties: 4
@@ -27,15 +44,20 @@ advanced.Existential#e1().
 +++ metacp
                typeRef {
                  prefix {
--                symbol: "local7"
+-                symbol: "local12"
 +                symbol: "local0"
          declarations {
            hardlinks {
--            symbol: "local7"
+-            symbol: "local12"
 +            symbol: "local0"
              kind: TYPE
              properties: 4
              name: "_"
+               tag: PUBLIC
+               symbol: ""
+-            owner: "advanced.Existential#e1()."
++            owner: ""
+             language: SCALA
 
 
 ==========================
@@ -45,15 +67,20 @@ advanced.Existential#e2().
 +++ metacp
                    typeRef {
                      prefix {
--                    symbol: "local8"
+-                    symbol: "local13"
 +                    symbol: "local1"
              declarations {
                hardlinks {
--                symbol: "local8"
+-                symbol: "local13"
 +                symbol: "local1"
                  kind: TYPE
                  properties: 4
                  name: "T"
+                   tag: PUBLIC
+                   symbol: ""
+-                owner: "advanced.Existential#e2()."
++                owner: ""
+                 language: SCALA
 
 
 ==========================
@@ -63,25 +90,66 @@ advanced.Existential#e4().
 +++ metacp
            typeRef {
              prefix {
--            symbol: "local10"
+-            symbol: "local15"
 +            symbol: "local2"
              type_arguments {
                typeRef {
                  prefix {
          declarations {
            hardlinks {
--            symbol: "local10"
+-            symbol: "local15"
 +            symbol: "local2"
              kind: TYPE
              properties: 4
              name: "U"
                  type_parameters {
                    hardlinks {
--                    symbol: "local11"
+-                    symbol: "local16"
 +                    symbol: "local3"
                      kind: TYPE_PARAMETER
                      properties: 0
                      name: "T"
+                       tag: PUBLIC
+                       symbol: ""
+-                    owner: "local15"
++                    owner: ""
+                     language: SCALA
+               tag: PUBLIC
+               symbol: ""
+-            owner: "advanced.Existential#e4()."
++            owner: ""
+             language: SCALA
+
+
+=========================
+advanced.Structural#s1().
+=========================
+--- metac
++++ metacp
+               tag: PUBLIC
+               symbol: ""
+-            owner: "local1"
++            owner: ""
+             language: SCALA
+
+
+=========================
+advanced.Structural#s2().
+=========================
+--- metac
++++ metacp
+         declarations {
+           hardlinks {
+-            symbol: "local2"
++            symbol: "local1"
+             kind: METHOD
+             properties: 1024
+             name: "x"
+               tag: PUBLIC
+               symbol: ""
+-            owner: "local3"
++            owner: ""
+             language: SCALA
 
 
 =========================
@@ -91,18 +159,28 @@ advanced.Structural#s3().
 +++ metacp
          declarations {
            hardlinks {
--            symbol: "local3"
+-            symbol: "local6"
 +            symbol: "local2"
              kind: METHOD
              properties: 0
              name: "m"
                  parameterLists {
                    hardlinks {
--                    symbol: "local4"
+-                    symbol: "local7"
 +                    symbol: "local3"
                      kind: PARAMETER
                      properties: 0
                      name: "x"
+                       tag: PUBLIC
+                       symbol: ""
+-                    owner: "local6"
++                    owner: ""
+                     language: SCALA
+               tag: PUBLIC
+               symbol: ""
+-            owner: "local8"
++            owner: ""
+             language: SCALA
 
 
 ===================
@@ -112,15 +190,51 @@ advanced.Test.e2().
 +++ metacp
                    typeRef {
                      prefix {
--                    symbol: "local8"
+-                    symbol: "local13"
 +                    symbol: "advanced.Test.T#"
              declarations {
                hardlinks {
--                symbol: "local8"
+-                symbol: "local13"
 +                symbol: "advanced.Test.T#"
                  kind: TYPE
                  properties: 4
                  name: "T"
+                   tag: PUBLIC
+                   symbol: ""
+-                owner: "advanced.Existential#e2()."
++                owner: "advanced.Test."
+                 language: SCALA
+
+
+===================
+advanced.Test.s1().
+===================
+--- metac
++++ metacp
+               tag: PUBLIC
+               symbol: ""
+-            owner: "local1"
++            owner: ""
+             language: SCALA
+
+
+===================
+advanced.Test.s2().
+===================
+--- metac
++++ metacp
+         declarations {
+           hardlinks {
+-            symbol: "local2"
++            symbol: "local1"
+             kind: METHOD
+             properties: 1024
+             name: "x"
+               tag: PUBLIC
+               symbol: ""
+-            owner: "local3"
++            owner: ""
+             language: SCALA
 
 
 ===================
@@ -130,18 +244,28 @@ advanced.Test.s3().
 +++ metacp
          declarations {
            hardlinks {
--            symbol: "local3"
+-            symbol: "local6"
 +            symbol: "local2"
              kind: METHOD
              properties: 0
              name: "m"
                  parameterLists {
                    hardlinks {
--                    symbol: "local4"
+-                    symbol: "local7"
 +                    symbol: "local3"
                      kind: PARAMETER
                      properties: 0
                      name: "x"
+                       tag: PUBLIC
+                       symbol: ""
+-                    owner: "local6"
++                    owner: ""
+                     language: SCALA
+               tag: PUBLIC
+               symbol: ""
+-            owner: "local8"
++            owner: ""
+             language: SCALA
 
 
 ============================
@@ -187,11 +311,16 @@ classes.N.anonClass().
 +++ metacp
          declarations {
            hardlinks {
--            symbol: "local1"
+-            symbol: "local2"
 +            symbol: "local0"
              kind: METHOD
              properties: 1024
              name: "local"
+               tag: PUBLIC
+               symbol: ""
+-            owner: "local3"
++            owner: ""
+             language: SCALA
 
 
 ============
@@ -233,6 +362,18 @@ example.MetacJava#staticInner().
      type_parameters {
 
 
+==========================
+example.Methods#m12b().(x)
+==========================
+--- metac
++++ metacp
+           tag: PUBLIC
+           symbol: ""
+-        owner: "local1"
++        owner: ""
+         language: SCALA
+
+
 =========================
 example.Methods#m13().(x)
 =========================
@@ -255,6 +396,29 @@ example.Methods#m13().(x)
 -          symbol: "scala.unchecked#"
 +    symbol: "scala.Int#"
  accessibility {
+
+
+=========================
+example.Methods#m14().(x)
+=========================
+--- metac
++++ metacp
+       typeRef {
+         prefix {
+-        symbol: "local2"
++        symbol: "local1"
+     declarations {
+       hardlinks {
+-        symbol: "local2"
++        symbol: "local1"
+         kind: TYPE
+         properties: 4
+         name: "T"
+           tag: PUBLIC
+           symbol: ""
+-        owner: "example.Methods#m14().(x)"
++        owner: ""
+         language: SCALA
 
 
 ================
@@ -326,17 +490,53 @@ types.Test.C#annType2().
 
 
 =============================
+types.Test.C#compoundType1().
+=============================
+--- metac
++++ metacp
+               tag: PUBLIC
+               symbol: ""
+-            owner: "local1"
++            owner: ""
+             language: SCALA
+
+
+=============================
+types.Test.C#compoundType3().
+=============================
+--- metac
++++ metacp
+         declarations {
+           hardlinks {
+-            symbol: "local2"
++            symbol: "local1"
+             kind: METHOD
+             properties: 4
+             name: "k"
+               tag: PUBLIC
+               symbol: ""
+-            owner: "local3"
++            owner: ""
+             language: SCALA
+
+
+=============================
 types.Test.C#compoundType4().
 =============================
 --- metac
 +++ metacp
          declarations {
            hardlinks {
--            symbol: "local3"
+-            symbol: "local6"
 +            symbol: "local2"
              kind: METHOD
              properties: 0
              name: "k"
+               tag: PUBLIC
+               symbol: ""
+-            owner: "local7"
++            owner: ""
+             language: SCALA
 
 
 =============================
@@ -346,11 +546,16 @@ types.Test.C#compoundType6().
 +++ metacp
          declarations {
            hardlinks {
--            symbol: "local5"
+-            symbol: "local10"
 +            symbol: "local3"
              kind: METHOD
              properties: 0
              name: "k"
+               tag: PUBLIC
+               symbol: ""
+-            owner: "local11"
++            owner: ""
+             language: SCALA
 
 
 ================================
@@ -360,15 +565,20 @@ types.Test.C#existentialType1().
 +++ metacp
            typeRef {
              prefix {
--            symbol: "local7"
+-            symbol: "local13"
 +            symbol: "local4"
          declarations {
            hardlinks {
--            symbol: "local7"
+-            symbol: "local13"
 +            symbol: "local4"
              kind: TYPE
              properties: 4
              name: "T"
+               tag: PUBLIC
+               symbol: ""
+-            owner: "types.Test.C#existentialType1."
++            owner: ""
+             language: SCALA
 
 
 ================================
@@ -378,15 +588,20 @@ types.Test.C#existentialType2().
 +++ metacp
                typeRef {
                  prefix {
--                symbol: "local8"
+-                symbol: "local14"
 +                symbol: "local5"
          declarations {
            hardlinks {
--            symbol: "local8"
+-            symbol: "local14"
 +            symbol: "local5"
              kind: TYPE
              properties: 4
              name: "_"
+               tag: PUBLIC
+               symbol: ""
+-            owner: "types.Test.C#existentialType2."
++            owner: ""
+             language: SCALA
 
 
 ===========================

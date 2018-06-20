@@ -41,7 +41,8 @@ class Scalacp private (classfile: ToplevelClassfile)
         language = l.SCALA,
         kind = k.PACKAGE,
         name = enclosingPackage.desc.name,
-        accessibility = Some(s.Accessibility(a.PUBLIC)))
+        accessibility = Some(s.Accessibility(a.PUBLIC)),
+        owner = enclosingPackage.owner)
     }
   }
 

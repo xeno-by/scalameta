@@ -52,7 +52,8 @@ object Javacp {
         name = name,
         tpe = tpe,
         annotations = sannotations(access),
-        accessibility = saccessibility(access, symbol)
+        accessibility = saccessibility(access, symbol),
+        owner = symbol.owner
       )
       buf += info
       info
@@ -326,7 +327,8 @@ object Javacp {
       language = l.JAVA,
       kind = k.TYPE_PARAMETER,
       name = typeParameter.value.identifier,
-      tpe = tpe
+      tpe = tpe,
+      owner = typeParameter.symbol.owner
     )
   }
 

@@ -5,6 +5,7 @@ import scala.meta.internal.metacp._
 import scala.meta.internal.{semanticdb => s}
 import scala.meta.internal.semanticdb.Accessibility.{Tag => a}
 import scala.meta.internal.semanticdb.{Language => l}
+import scala.meta.internal.semanticdb.Scala._
 import scala.meta.internal.semanticdb.SymbolInformation.{Kind => k}
 import scala.meta.internal.semanticdb.SymbolInformation.{Property => p}
 
@@ -69,7 +70,8 @@ object Scalalib {
       properties = p.PRIMARY.value,
       name = "<init>",
       tpe = ctorSig,
-      accessibility = Some(s.Accessibility(a.PUBLIC))
+      accessibility = Some(s.Accessibility(a.PUBLIC)),
+      owner = symbol
     )
     val builtinSig = {
       val tparams = Some(s.Scope(Nil))
@@ -84,7 +86,8 @@ object Scalalib {
       properties = props.foldLeft(0)((acc, prop) => acc | prop.value),
       name = name,
       tpe = builtinSig,
-      accessibility = Some(s.Accessibility(a.PUBLIC))
+      accessibility = Some(s.Accessibility(a.PUBLIC)),
+      owner = symbol.owner
     )
     val syntheticBase = PathIO.workingDirectory
     val syntheticPath = syntheticBase.resolve("scala/" + name + ".class")
@@ -115,7 +118,8 @@ object Scalalib {
         properties = 0,
         name = tparamName,
         tpe = tparamSig,
-        accessibility = None)
+        accessibility = None,
+        owner = tparamSymbol.owner)
     }
     val params = paramDsls.map {
       case (paramName, paramTpeSymbol) =>
@@ -127,7 +131,8 @@ object Scalalib {
           kind = k.PARAMETER,
           properties = 0,
           name = paramName,
-          tpe = paramSig)
+          tpe = paramSig,
+          owner = paramSymbol.owner)
     }
     val methodSig = {
       val tps = Some(s.Scope(tparams.map(_.symbol)))
@@ -142,7 +147,8 @@ object Scalalib {
       properties = props.foldLeft(0)((acc, prop) => acc | prop.value),
       name = methodName,
       tpe = methodSig,
-      accessibility = Some(s.Accessibility(a.PUBLIC)))
+      accessibility = Some(s.Accessibility(a.PUBLIC)),
+      owner = methodSymbol.owner)
     List(method) ++ tparams ++ params
   }
 }

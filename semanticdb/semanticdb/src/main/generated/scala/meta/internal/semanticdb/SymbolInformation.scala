@@ -14,7 +14,8 @@ final case class SymbolInformation(
     name: _root_.scala.Predef.String = "",
     tpe: scala.meta.internal.semanticdb.Type = scala.meta.internal.semanticdb.SymbolInformation._typemapper_tpe.toCustom(scala.meta.internal.semanticdb.TypeMessage.defaultInstance),
     annotations: _root_.scala.collection.Seq[scala.meta.internal.semanticdb.Annotation] = _root_.scala.collection.Seq.empty,
-    accessibility: _root_.scala.Option[scala.meta.internal.semanticdb.Accessibility] = None
+    accessibility: _root_.scala.Option[scala.meta.internal.semanticdb.Accessibility] = None,
+    owner: _root_.scala.Predef.String = ""
     ) extends scalapb.GeneratedMessage with scalapb.Message[SymbolInformation] with scalapb.lenses.Updatable[SymbolInformation] {
     @transient
     private[this] var __serializedSizeCachedValue: _root_.scala.Int = 0
@@ -69,6 +70,13 @@ final case class SymbolInformation(
       if (accessibility.isDefined) {
         val __value = accessibility.get
         __size += 1 + _root_.com.google.protobuf.CodedOutputStream.computeUInt32SizeNoTag(__value.serializedSize) + __value.serializedSize
+      };
+      
+      {
+        val __value = owner
+        if (__value != "") {
+          __size += _root_.com.google.protobuf.CodedOutputStream.computeStringSize(15, __value)
+        }
       };
       __size
     }
@@ -126,6 +134,12 @@ final case class SymbolInformation(
         __m.writeTo(_output__)
       };
       {
+        val __v = owner
+        if (__v != "") {
+          _output__.writeString(15, __v)
+        }
+      };
+      {
         val __v = language
         if (__v != scala.meta.internal.semanticdb.Language.UNKNOWN_LANGUAGE) {
           _output__.writeEnum(16, __v.value)
@@ -141,6 +155,7 @@ final case class SymbolInformation(
       var __tpe = this.tpe
       val __annotations = (_root_.scala.collection.immutable.Vector.newBuilder[scala.meta.internal.semanticdb.Annotation] ++= this.annotations)
       var __accessibility = this.accessibility
+      var __owner = this.owner
       var _done__ = false
       while (!_done__) {
         val _tag__ = _input__.readTag()
@@ -162,6 +177,8 @@ final case class SymbolInformation(
             __annotations += _root_.scalapb.LiteParser.readMessage(_input__, scala.meta.internal.semanticdb.Annotation.defaultInstance)
           case 114 =>
             __accessibility = Option(_root_.scalapb.LiteParser.readMessage(_input__, __accessibility.getOrElse(scala.meta.internal.semanticdb.Accessibility.defaultInstance)))
+          case 122 =>
+            __owner = _input__.readString()
           case tag => _input__.skipField(tag)
         }
       }
@@ -173,7 +190,8 @@ final case class SymbolInformation(
           name = __name,
           tpe = __tpe,
           annotations = __annotations.result(),
-          accessibility = __accessibility
+          accessibility = __accessibility,
+          owner = __owner
       )
     }
     def withSymbol(__v: _root_.scala.Predef.String): SymbolInformation = copy(symbol = __v)
@@ -189,6 +207,7 @@ final case class SymbolInformation(
     def getAccessibility: scala.meta.internal.semanticdb.Accessibility = accessibility.getOrElse(scala.meta.internal.semanticdb.Accessibility.defaultInstance)
     def clearAccessibility: SymbolInformation = copy(accessibility = None)
     def withAccessibility(__v: scala.meta.internal.semanticdb.Accessibility): SymbolInformation = copy(accessibility = Option(__v))
+    def withOwner(__v: _root_.scala.Predef.String): SymbolInformation = copy(owner = __v)
     def getFieldByNumber(__fieldNumber: _root_.scala.Int): _root_.scala.Any = {
       (__fieldNumber: @_root_.scala.unchecked) match {
         case 1 => {
@@ -217,6 +236,10 @@ final case class SymbolInformation(
         }
         case 13 => annotations
         case 14 => accessibility.orNull
+        case 15 => {
+          val __t = owner
+          if (__t != "") __t else null
+        }
       }
     }
     def getField(__field: _root_.scalapb.descriptors.FieldDescriptor): _root_.scalapb.descriptors.PValue = {
@@ -230,6 +253,7 @@ final case class SymbolInformation(
         case 11 => scala.meta.internal.semanticdb.SymbolInformation._typemapper_tpe.toBase(tpe).toPMessage
         case 13 => _root_.scalapb.descriptors.PRepeated(annotations.map(_.toPMessage)(_root_.scala.collection.breakOut))
         case 14 => accessibility.map(_.toPMessage).getOrElse(_root_.scalapb.descriptors.PEmpty)
+        case 15 => _root_.scalapb.descriptors.PString(owner)
       }
     }
     def toProtoString: _root_.scala.Predef.String = _root_.scalapb.TextFormat.printToUnicodeString(this)
@@ -249,7 +273,8 @@ object SymbolInformation extends scalapb.GeneratedMessageCompanion[scala.meta.in
       __fieldsMap.getOrElse(__fields.get(4), "").asInstanceOf[_root_.scala.Predef.String],
       scala.meta.internal.semanticdb.SymbolInformation._typemapper_tpe.toCustom(__fieldsMap.getOrElse(__fields.get(5), scala.meta.internal.semanticdb.TypeMessage.defaultInstance).asInstanceOf[scala.meta.internal.semanticdb.TypeMessage]),
       __fieldsMap.getOrElse(__fields.get(6), Nil).asInstanceOf[_root_.scala.collection.Seq[scala.meta.internal.semanticdb.Annotation]],
-      __fieldsMap.get(__fields.get(7)).asInstanceOf[_root_.scala.Option[scala.meta.internal.semanticdb.Accessibility]]
+      __fieldsMap.get(__fields.get(7)).asInstanceOf[_root_.scala.Option[scala.meta.internal.semanticdb.Accessibility]],
+      __fieldsMap.getOrElse(__fields.get(8), "").asInstanceOf[_root_.scala.Predef.String]
     )
   }
   implicit def messageReads: _root_.scalapb.descriptors.Reads[scala.meta.internal.semanticdb.SymbolInformation] = _root_.scalapb.descriptors.Reads{
@@ -263,7 +288,8 @@ object SymbolInformation extends scalapb.GeneratedMessageCompanion[scala.meta.in
         __fieldsMap.get(scalaDescriptor.findFieldByNumber(5).get).map(_.as[_root_.scala.Predef.String]).getOrElse(""),
         scala.meta.internal.semanticdb.SymbolInformation._typemapper_tpe.toCustom(__fieldsMap.get(scalaDescriptor.findFieldByNumber(11).get).map(_.as[scala.meta.internal.semanticdb.TypeMessage]).getOrElse(scala.meta.internal.semanticdb.TypeMessage.defaultInstance)),
         __fieldsMap.get(scalaDescriptor.findFieldByNumber(13).get).map(_.as[_root_.scala.collection.Seq[scala.meta.internal.semanticdb.Annotation]]).getOrElse(_root_.scala.collection.Seq.empty),
-        __fieldsMap.get(scalaDescriptor.findFieldByNumber(14).get).flatMap(_.as[_root_.scala.Option[scala.meta.internal.semanticdb.Accessibility]])
+        __fieldsMap.get(scalaDescriptor.findFieldByNumber(14).get).flatMap(_.as[_root_.scala.Option[scala.meta.internal.semanticdb.Accessibility]]),
+        __fieldsMap.get(scalaDescriptor.findFieldByNumber(15).get).map(_.as[_root_.scala.Predef.String]).getOrElse("")
       )
     case _ => throw new RuntimeException("Expected PMessage")
   }
@@ -631,6 +657,7 @@ object SymbolInformation extends scalapb.GeneratedMessageCompanion[scala.meta.in
     def annotations: _root_.scalapb.lenses.Lens[UpperPB, _root_.scala.collection.Seq[scala.meta.internal.semanticdb.Annotation]] = field(_.annotations)((c_, f_) => c_.copy(annotations = f_))
     def accessibility: _root_.scalapb.lenses.Lens[UpperPB, scala.meta.internal.semanticdb.Accessibility] = field(_.getAccessibility)((c_, f_) => c_.copy(accessibility = Option(f_)))
     def optionalAccessibility: _root_.scalapb.lenses.Lens[UpperPB, _root_.scala.Option[scala.meta.internal.semanticdb.Accessibility]] = field(_.accessibility)((c_, f_) => c_.copy(accessibility = f_))
+    def owner: _root_.scalapb.lenses.Lens[UpperPB, _root_.scala.Predef.String] = field(_.owner)((c_, f_) => c_.copy(owner = f_))
   }
   final val SYMBOL_FIELD_NUMBER = 1
   final val LANGUAGE_FIELD_NUMBER = 16
@@ -640,6 +667,7 @@ object SymbolInformation extends scalapb.GeneratedMessageCompanion[scala.meta.in
   final val TPE_FIELD_NUMBER = 11
   final val ANNOTATIONS_FIELD_NUMBER = 13
   final val ACCESSIBILITY_FIELD_NUMBER = 14
+  final val OWNER_FIELD_NUMBER = 15
   @transient
   private val _typemapper_tpe: _root_.scalapb.TypeMapper[scala.meta.internal.semanticdb.TypeMessage, scala.meta.internal.semanticdb.Type] = implicitly[_root_.scalapb.TypeMapper[scala.meta.internal.semanticdb.TypeMessage, scala.meta.internal.semanticdb.Type]]
 }
