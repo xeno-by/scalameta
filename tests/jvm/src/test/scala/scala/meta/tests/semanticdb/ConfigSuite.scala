@@ -38,7 +38,7 @@ class ConfigSuite extends FunSuite with DiffAssertions {
       val (metacIsSuccess, metacOut, metacErr) = CliSuite.withReporter { reporter =>
         val settings = metac
           .Settings()
-          .withScalacArgs(
+          .withCompilerArgs(
             scalacArgs ++ List(
               "-d",
               targetroot.toString,

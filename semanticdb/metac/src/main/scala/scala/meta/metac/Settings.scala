@@ -2,17 +2,27 @@ package scala.meta.metac
 
 import scala.meta.cli._
 
-final class Settings private (val scalacArgs: List[String]) {
+final class Settings private (val compilerArgs: List[String]) {
   private def this() = {
-    this(scalacArgs = Nil)
+    this(compilerArgs = Nil)
   }
 
+  @deprecated("Use `compilerArgs`.", "4.0.0")
+  def scalacArgs: List[String] = {
+    compilerArgs
+  }
+
+  @deprecated("Use `withCompilerArgs`.", "4.0.0")
   def withScalacArgs(scalacArgs: List[String]): Settings = {
-    copy(scalacArgs = scalacArgs)
+    withCompilerArgs(scalacArgs)
   }
 
-  private def copy(scalacArgs: List[String] = scalacArgs): Settings = {
-    new Settings(scalacArgs = scalacArgs)
+  def withCompilerArgs(compilerArgs: List[String]): Settings = {
+    copy(compilerArgs = compilerArgs)
+  }
+
+  private def copy(compilerArgs: List[String] = compilerArgs): Settings = {
+    new Settings(compilerArgs = compilerArgs)
   }
 }
 

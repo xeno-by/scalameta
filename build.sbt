@@ -207,7 +207,7 @@ lazy val metac = project
   )
   // FIXME: https://github.com/scalameta/scalameta/issues/1688
   .disablePlugins(BackgroundRunPlugin)
-  .dependsOn(cliJVM, semanticdbScalacPlugin)
+  .dependsOn(cliJVM, semanticdbScalacPlugin, semanticdbJavacPlugin)
 
 lazy val metacp = project
   .in(file("semanticdb/metacp"))

@@ -33,7 +33,7 @@ class CliSuite extends FunSuite with DiffAssertions {
         "-d",
         target.toString,
         helloWorldScala.toString)
-      val settings = scala.meta.metac.Settings().withScalacArgs(scalacArgs)
+      val settings = scala.meta.metac.Settings().withCompilerArgs(scalacArgs)
       val reporter = Reporter()
       Metac.process(settings, reporter)
     }

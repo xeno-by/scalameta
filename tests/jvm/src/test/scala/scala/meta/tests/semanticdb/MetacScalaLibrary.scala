@@ -40,7 +40,7 @@ object MetacScalaLibrary {
       classpath,
       "-P:semanticdb:failures:error"
     ) ++ files
-    val settings = Settings().withScalacArgs(scalacArgs)
+    val settings = Settings().withCompilerArgs(scalacArgs)
     val reporter = Reporter()
     val success = Metac.process(settings, reporter)
     println(out)
