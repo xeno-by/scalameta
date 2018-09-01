@@ -16,6 +16,7 @@ trait TypeMirrors {
         val prefix = {
           val enclosing = mirror.getEnclosingType
           if (enclosing.getKind == TypeKind.NONE) s.NoType
+          else if (enclosing.getKind == TypeKind.ERROR) s.NoType
           else enclosing.tpe
         }
         def prefixIsTrivial(tpe: s.Type): Boolean = tpe match {
