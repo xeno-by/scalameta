@@ -142,7 +142,7 @@ object ClasspathIndex {
               if (element.isDirectory) element.getName
               else PathIO.dirname(element.getName)
             )
-            val inJar = CompressedClassfile(element, file)
+            val inJar = CompressedClassfile(element, new java.util.zip.ZipFile(file))
             addMember(parent, PathIO.basename(element.getName), inJar)
           }
         }

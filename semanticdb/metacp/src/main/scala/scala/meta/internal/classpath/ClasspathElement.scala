@@ -55,13 +55,8 @@ final case class UncompressedClassfile(relativeUri: String, path: AbsolutePath) 
 }
 
 /** A classpath entry that is a classfile inside a jar file. */
-final case class CompressedClassfile(entry: ZipEntry, zip: File) extends Classfile {
+final case class CompressedClassfile(entry: ZipEntry, zip: ZipFile) extends Classfile {
   override def relativeUri: String = entry.getName
-  def openInputStream(): InputStream = {
-    val openFile = new ZipFile(zip)
-    val delegate = openFile.getInputStream(entry)
-    new FilterInputStream(delegate) {
-      override def close(): Unit = openFile.close()
-    }
-  }
+  def openInputStream(): InputStream =
+    zip.getInputStream(entry)
 }
